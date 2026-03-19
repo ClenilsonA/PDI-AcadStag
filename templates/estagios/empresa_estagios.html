@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="flex justify-between items-center mb-4">
+  <h2 class="text-2xl font-semibold">Meus Estágios</h2>
+
+  <a
+    href="{% url 'estagios:create' %}"
+    class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition"
+  >
+    + Criar estágio
+  </a>
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="text-left px-4 py-3">Título</th>
+          <th class="text-left px-4 py-3">Área</th>
+          <th class="text-left px-4 py-3">Duração</th>
+          <th class="text-left px-4 py-3">Estado</th>
+          <th class="text-left px-4 py-3">Data</th>
+          <th class="text-right px-4 py-3">Ações</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y">
+
+        {% for e in estagios %}
+        <tr class="hover:bg-gray-50">
+
+          <td class="px-4 py-3">
+            <div class="font-semibold">{{ e.titulo }}</div>
+            <div class="text-gray-500 text-xs">
+              {{ e.descricao|truncatechars:70 }}
+            </div>
+          </td>
+
+          <td class="px-4 py-3">
+            {{ e.area }}
+          </td>
+
+          <td class="px-4 py-3">
+            {{ e.duracao_meses }} meses
+          </td>
+
+          <td class="px-4 py-3">
+            {% if e.ativo %}
+              <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">
+                Ativo
+              </span>
+            {% else %}
+              <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">
+                Inativo
+              </span>
+            {% endif %}
+          </td>
+
+          <td class="px-4 py-3 text-gray-600">
+            {{ e.data_criacao|date:"d/m/Y" }}
+          </td>
+
+          <td class="px-4 py-3 text-right space-x-2">
+
+            <a
+              href="{% url 'estagios:update' e.id %}"
+              class="border border-blue-600 text-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-50"
+            >
+              Editar
+            </a>
+
+            {% if e.ativo %}
+              <a
+                href="{% url 'estagios:deactivate' e.id %}"
+                class="border border-red-600 text-red-600 px-3 py-1 rounded text-sm hover:bg-red-50"
+              >
+                Desativar
+              </a>
+            {% else %}
+              <span class="text-gray-400 text-sm">
+                Desativado
+              </span>
+            {% endif %}
+
+          </td>
+
+        </tr>
+
+        {% empty %}
+        <tr>
+          <td colspan="6" class="p-6">
+
+            <div class="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800">
+              Ainda não criaste estágios.  
+              Clica em <b>“Criar estágio”</b>.
+            </div>
+
+          </td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+
+    </table>
+  </div>
+
+</div>
+
+{% endblock %}

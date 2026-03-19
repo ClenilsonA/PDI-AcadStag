@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-2xl font-semibold">Minhas candidaturas</h2>
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="text-left px-4 py-3">Estágio</th>
+          <th class="text-left px-4 py-3">Empresa</th>
+          <th class="text-left px-4 py-3">Estado</th>
+          <th class="text-left px-4 py-3">Data</th>
+          <th class="text-right px-4 py-3">Ações</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y">
+
+        {% for c in candidaturas %}
+        <tr class="hover:bg-gray-50">
+
+          <td class="px-4 py-3">
+            <a
+              href="{% url 'estagios:detail' c.estagio.id %}"
+              class="font-semibold text-blue-600 hover:underline"
+            >
+              {{ c.estagio.titulo }}
+            </a>
+
+            <div class="text-gray-500 text-xs">
+              {{ c.estagio.area }} • {{ c.estagio.duracao_meses }} meses
+            </div>
+          </td>
+
+          <td class="px-4 py-3">
+            {{ c.estagio.empresa.nome }}
+          </td>
+
+          <td class="px-4 py-3">
+            {% if c.status == "ACEITE" %}
+              <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">
+                ACEITE
+              </span>
+            {% elif c.status == "REJEITADO" %}
+              <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">
+                REJEITADO
+              </span>
+            {% else %}
+              <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">
+                PENDENTE
+              </span>
+            {% endif %}
+          </td>
+
+          <td class="px-4 py-3 text-gray-600">
+            {{ c.data_candidatura|date:"d/m/Y H:i" }}
+          </td>
+
+          <td class="px-4 py-3 text-right">
+            <a
+              href="{% url 'candidaturas:acompanhamento' c.id %}"
+              class="inline-flex items-center rounded-md border border-blue-600 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 transition"
+            >
+              Acompanhamento
+            </a>
+          </td>
+
+        </tr>
+
+        {% empty %}
+        <tr>
+          <td colspan="5" class="p-6">
+            <div class="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800">
+              Ainda não tens candidaturas.
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+
+    </table>
+  </div>
+
+</div>
+
+{% endblock %}

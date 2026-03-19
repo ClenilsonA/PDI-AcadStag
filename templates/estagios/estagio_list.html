@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="flex justify-between items-center mb-4">
+  <h2 class="text-2xl font-semibold">Estágios disponíveis</h2>
+</div>
+
+<form method="get" class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-6">
+
+  <div class="md:col-span-4">
+    <input
+      type="text"
+      name="q"
+      placeholder="Pesquisar (título, área, empresa...)"
+      value="{{ q }}"
+      class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+  </div>
+
+  <div class="md:col-span-3">
+    <select
+      name="area"
+      class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="">Todas as áreas</option>
+      {% for a in areas_disponiveis %}
+        <option value="{{ a }}" {% if a == area_selecionada %}selected{% endif %}>{{ a }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="md:col-span-2">
+    <select
+      name="duracao"
+      class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="">Duração</option>
+      <option value="1" {% if duracao_selecionada == "1" %}selected{% endif %}>1 mês</option>
+      <option value="2" {% if duracao_selecionada == "2" %}selected{% endif %}>2 meses</option>
+      <option value="3" {% if duracao_selecionada == "3" %}selected{% endif %}>3 meses</option>
+      <option value="4" {% if duracao_selecionada == "4" %}selected{% endif %}>4 meses</option>
+      <option value="5" {% if duracao_selecionada == "5" %}selected{% endif %}>5 meses</option>
+      <option value="6" {% if duracao_selecionada == "6" %}selected{% endif %}>6 meses</option>
+      <option value="7" {% if duracao_selecionada == "7" %}selected{% endif %}>7 meses</option>
+      <option value="8" {% if duracao_selecionada == "8" %}selected{% endif %}>8 meses</option>
+      <option value="9" {% if duracao_selecionada == "9" %}selected{% endif %}>9 meses</option>
+      <option value="10" {% if duracao_selecionada == "10" %}selected{% endif %}>10 meses</option>
+      <option value="11" {% if duracao_selecionada == "11" %}selected{% endif %}>11 meses</option>
+      <option value="12" {% if duracao_selecionada == "12" %}selected{% endif %}>12 meses</option>
+    </select>
+  </div>
+
+  <div class="md:col-span-2">
+    <select
+      name="ordem"
+      class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="recentes" {% if ordem == "recentes" %}selected{% endif %}>Mais recentes</option>
+      <option value="antigos" {% if ordem == "antigos" %}selected{% endif %}>Mais antigos</option>
+    </select>
+  </div>
+
+  <div class="md:col-span-1">
+    <button
+      type="submit"
+      class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+    >
+      OK
+    </button>
+  </div>
+
+  {% if q or area_selecionada or duracao_selecionada %}
+    <div class="md:col-span-12">
+      <a class="text-blue-600 hover:underline text-sm" href="{% url 'estagios:list' %}">
+        Limpar filtros
+      </a>
+    </div>
+  {% endif %}
+</form>
+
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+  {% for e in estagios %}
+    <div class="bg-white shadow rounded-lg h-full flex flex-col justify-between">
+      <div class="p-5">
+        <h5 class="text-lg font-semibold mb-2">{{ e.titulo }}</h5>
+
+        <div class="flex gap-2 flex-wrap mb-3">
+          <span class="inline-flex items-center rounded-full bg-gray-200 px-3 py-1 text-sm text-gray-800">
+            {{ e.area }}
+          </span>
+          <span class="inline-flex items-center rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700 bg-white">
+            {{ e.duracao_meses }} meses
+          </span>
+        </div>
+
+        <p class="text-gray-500 mb-2">
+          <b>Empresa:</b> {{ e.empresa.nome }}
+        </p>
+
+        <p class="text-gray-700 min-h-[48px]">
+          {{ e.descricao|truncatechars:110 }}
+        </p>
+      </div>
+
+      <div class="px-5 pb-5 flex justify-between items-center">
+        <a
+          class="inline-flex items-center rounded-md border border-blue-600 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 transition"
+          href="{% url 'estagios:detail' e.id %}"
+        >
+          Ver detalhes
+        </a>
+        <small class="text-gray-500">{{ e.data_criacao|date:"d/m/Y" }}</small>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-span-full">
+      <div class="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800">
+        Sem estágios que correspondam aos filtros.
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

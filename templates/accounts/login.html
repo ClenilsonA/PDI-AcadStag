@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="flex items-center justify-center min-h-[70vh]">
+  <div class="w-full max-w-md bg-white shadow-md rounded-lg p-6">
+
+    <h3 class="text-2xl font-semibold text-center mb-2">
+      Iniciar sessão
+    </h3>
+
+    <p class="text-gray-500 text-center mb-6">
+      Aceda ao AcadStag com a tua conta.
+    </p>
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Utilizador
+        </label>
+        <input
+          type="text"
+          name="username"
+          placeholder="ex: aluno1"
+          required
+          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Palavra-passe
+        </label>
+        <input
+          type="password"
+          name="password"
+          placeholder="********"
+          required
+          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+      >
+        Entrar
+      </button>
+    </form>
+
+    <div class="border-t my-6"></div>
+
+    <div class="text-center">
+      <p class="text-gray-500 text-sm mb-3">
+        Ainda não tens conta?
+      </p>
+
+      <div class="flex justify-center gap-2 flex-wrap">
+        <a
+          href="{% url 'accounts:register_aluno' %}"
+          class="border border-blue-600 text-blue-600 px-3 py-1 rounded-md text-sm hover:bg-blue-50"
+        >
+          Criar conta Aluno
+        </a>
+
+        <a
+          href="{% url 'accounts:register_empresa' %}"
+          class="border border-blue-600 text-blue-600 px-3 py-1 rounded-md text-sm hover:bg-blue-50"
+        >
+          Criar conta Empresa
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

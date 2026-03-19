@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
+  <div>
+    <h2 class="text-2xl font-semibold">Acompanhamento do Estágio</h2>
+    <div class="text-sm text-gray-500">
+      {{ candidatura.estagio.titulo }} • {{ candidatura.estagio.empresa.nome }}
+    </div>
+  </div>
+
+  <a
+    href="{% url 'candidaturas:minhas' %}"
+    class="inline-flex items-center rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+  >
+     Voltar
+  </a>
+</div>
+
+{% if candidatura.status == "REJEITADO" %}
+  <div class="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-800">
+    A tua candidatura foi <b>rejeitada</b>. Podes candidatar-te a outros estágios.
+  </div>
+{% endif %}
+
+<!-- PROGRESSO -->
+<div class="bg-white shadow rounded-lg p-6 mb-6">
+  <h5 class="text-lg font-semibold mb-4">Progresso</h5>
+
+  {% if candidatura.status != "ACEITE" %}
+    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+      <div class="h-3 bg-gray-400 rounded-full" style="width: 0%"></div>
+    </div>
+  {% else %}
+    {% if avaliacao %}
+      <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div class="h-3 bg-green-600 rounded-full" style="width: 100%"></div>
+      </div>
+    {% elif relatorio %}
+      <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div class="h-3 bg-blue-600 rounded-full" style="width: 66%"></div>
+      </div>
+    {% else %}
+      <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div class="h-3 bg-blue-600 rounded-full" style="width: 33%"></div>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 text-center">
+    <div class="border rounded-lg p-3">
+      <div class="font-semibold mb-2">1) Candidatura</div>
+      {% if candidatura.status == "ACEITE" %}
+        <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">ACEITE</span>
+      {% elif candidatura.status == "REJEITADO" %}
+        <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">REJEITADO</span>
+      {% else %}
+        <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">PENDENTE</span>
+      {% endif %}
+    </div>
+
+    <div class="border rounded-lg p-3">
+      <div class="font-semibold mb-2">2) Relatório</div>
+      {% if candidatura.status != "ACEITE" %}
+        <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">Bloqueado</span>
+      {% else %}
+        {% if relatorio %}
+          {% if relatorio.estado == "APROVADO" %}
+            <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">APROVADO</span>
+          {% elif relatorio.estado == "REJEITADO" %}
+            <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">REJEITADO</span>
+          {% else %}
+            <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">PENDENTE</span>
+          {% endif %}
+        {% else %}
+          <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">Não submetido</span>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <div class="border rounded-lg p-3">
+      <div class="font-semibold mb-2">3) Avaliação</div>
+      {% if candidatura.status != "ACEITE" %}
+        <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">Bloqueado</span>
+      {% else %}
+        {% if avaliacao %}
+          <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Lançada</span>
+        {% else %}
+          <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">Pendente</span>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- DETALHES -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+  <div class="bg-white shadow rounded-lg p-6 h-full">
+    <h5 class="text-lg font-semibold mb-3">Candidatura</h5>
+
+    <p class="mb-2">
+      Estado:
+      {% if candidatura.status == "ACEITE" %}
+        <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">ACEITE</span>
+      {% elif candidatura.status == "REJEITADO" %}
+        <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">REJEITADO</span>
+      {% else %}
+        <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">PENDENTE</span>
+      {% endif %}
+    </p>
+
+    <p class="text-sm text-gray-500 mb-0">
+      Submetida em {{ candidatura.data_candidatura|date:"d/m/Y H:i" }}
+    </p>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6 h-full">
+    <h5 class="text-lg font-semibold mb-3">Relatório</h5>
+
+    {% if candidatura.status != "ACEITE" %}
+      <div class="rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-gray-700">
+        Só podes submeter relatório após a candidatura ser aceite.
+      </div>
+    {% else %}
+      {% if relatorio %}
+        <p class="mb-3">
+          Estado:
+          {% if relatorio.estado == "APROVADO" %}
+            <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">APROVADO</span>
+          {% elif relatorio.estado == "REJEITADO" %}
+            <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">REJEITADO</span>
+          {% else %}
+            <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">PENDENTE</span>
+          {% endif %}
+        </p>
+
+        <div class="flex gap-2 flex-wrap">
+          <a
+            href="{{ relatorio.ficheiro.url }}"
+            class="inline-flex items-center rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+          >
+            Ver PDF
+          </a>
+          <a
+            href="{% url 'relatorios:upload' candidatura.id %}"
+            class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700 transition"
+          >
+            Atualizar
+          </a>
+        </div>
+      {% else %}
+        <p class="text-gray-500 mb-3">Ainda não submeteste relatório.</p>
+        <a
+          href="{% url 'relatorios:upload' candidatura.id %}"
+          class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700 transition"
+        >
+          Submeter relatório
+        </a>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6 h-full">
+    <h5 class="text-lg font-semibold mb-3">Avaliação</h5>
+
+    {% if candidatura.status != "ACEITE" %}
+      <div class="rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-gray-700">
+        A avaliação só fica disponível após aceitação.
+      </div>
+    {% else %}
+      {% if avaliacao %}
+        <p class="mb-3">
+          Nota:
+          <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">
+            {{ avaliacao.nota }}
+          </span>
+        </p>
+
+        {% if avaliacao.comentario_orientador %}
+          <p class="mb-2"><b>Orientador:</b> {{ avaliacao.comentario_orientador }}</p>
+        {% endif %}
+
+        {% if avaliacao.comentario_empresa %}
+          <p class="mb-0"><b>Empresa:</b> {{ avaliacao.comentario_empresa }}</p>
+        {% endif %}
+
+        {% if not avaliacao.comentario_orientador and not avaliacao.comentario_empresa %}
+          <p class="text-gray-500 mb-0">Sem comentários.</p>
+        {% endif %}
+      {% else %}
+        <p class="text-gray-500 mb-0">Ainda não existe avaliação.</p>
+      {% endif %}
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}

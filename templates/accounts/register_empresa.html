@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="flex items-center justify-center py-10">
+  <div class="w-full max-w-4xl bg-white shadow-md rounded-lg p-6">
+
+    <h3 class="text-2xl font-semibold text-center mb-2">
+      Registo de Empresa
+    </h3>
+    <p class="text-gray-500 text-center mb-6">
+      Cria uma conta para publicar estágios.
+    </p>
+
+    <form method="post" novalidate class="space-y-6">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Utilizador</label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <div class="text-red-600 text-sm mt-1">{{ form.username.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <div class="text-red-600 text-sm mt-1">{{ form.email.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="border-t pt-4">
+        <h5 class="text-lg font-semibold text-gray-800 mb-4">Dados da empresa</h5>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+            {{ form.nome }}
+            {% if form.nome.errors %}
+              <div class="text-red-600 text-sm mt-1">{{ form.nome.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Área</label>
+            {{ form.area }}
+            {% if form.area.errors %}
+              <div class="text-red-600 text-sm mt-1">{{ form.area.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Contacto</label>
+            {{ form.contacto }}
+            {% if form.contacto.errors %}
+              <div class="text-red-600 text-sm mt-1">{{ form.contacto.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Morada</label>
+            {{ form.morada }}
+            {% if form.morada.errors %}
+              <div class="text-red-600 text-sm mt-1">{{ form.morada.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">NIF</label>
+            {{ form.nif }}
+            {% if form.nif.errors %}
+              <div class="text-red-600 text-sm mt-1">{{ form.nif.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t pt-4">
+        <h5 class="text-lg font-semibold text-gray-800 mb-4">Segurança</h5>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Palavra-passe</label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+              <div class="text-red-600 text-sm mt-1">{{ form.password1.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar palavra-passe</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+              <div class="text-red-600 text-sm mt-1">{{ form.password2.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+      >
+        Criar conta
+      </button>
+    </form>
+
+    <div class="border-t my-6"></div>
+
+    <div class="text-center text-sm">
+      <a class="text-blue-600 hover:underline" href="{% url 'accounts:register' %}">Voltar</a>
+      <span class="text-gray-400 mx-2">|</span>
+      <a class="text-blue-600 hover:underline" href="{% url 'accounts:login' %}">Já tenho conta</a>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

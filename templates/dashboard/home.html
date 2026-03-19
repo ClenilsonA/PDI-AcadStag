@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="text-2xl font-semibold mb-6">Dashboard</h2>
+
+{% if user.role == "ALUNO" %}
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white shadow rounded-lg p-5">
+      <div class="text-sm text-gray-500">Pendentes</div>
+      <div class="text-3xl font-bold mt-2">{{ kpis.pendentes }}</div>
+    </div>
+    <div class="bg-white shadow rounded-lg p-5">
+      <div class="text-sm text-gray-500">Aceites</div>
+      <div class="text-3xl font-bold mt-2">{{ kpis.aceites }}</div>
+    </div>
+    <div class="bg-white shadow rounded-lg p-5">
+      <div class="text-sm text-gray-500">Rejeitadas</div>
+      <div class="text-3xl font-bold mt-2">{{ kpis.rejeitadas }}</div>
+    </div>
+    <div class="bg-white shadow rounded-lg p-5">
+      <div class="text-sm text-gray-500">Avaliações</div>
+      <div class="text-3xl font-bold mt-2">{{ kpis.avaliadas }}</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="bg-white shadow rounded-lg p-5">
+      <h5 class="text-lg font-semibold mb-3">Últimas candidaturas</h5>
+      <ul class="space-y-2">
+        {% for c in ultimas_candidaturas %}
+          <li class="text-gray-700">{{ c.estagio.titulo }} — <b>{{ c.status }}</b></li>
+        {% empty %}
+          <li class="text-gray-500">Sem candidaturas.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-5">
+      <h5 class="text-lg font-semibold mb-3">Estágios recentes</h5>
+      <ul class="space-y-2">
+        {% for e in estagios_recentes %}
+          <li>
+            <a class="text-blue-600 hover:underline" href="{% url 'estagios:detail' e.id %}">
+              {{ e.titulo }}
+            </a>
+          </li>
+        {% empty %}
+          <li class="text-gray-500">Sem estágios disponíveis.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+{% elif user.role == "EMPRESA" %}
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white shadow rounded-lg p-5">
+      <div class="text-sm text-gray-500">Estágios ativos</div>
+      <div class="text-3xl font-bold mt-2">{{ kpis.estagios_ativos }}</div>
+    </div>
+    <div class="bg-white shadow rounded-lg p-5">
+      <div class="text-sm text-gray-500">Candidaturas pendentes</div>
+      <div class="text-3xl font-bold mt-2">{{ kpis.candidaturas_pendentes }}</div>
+    </div>
+    <div class="bg-white shadow rounded-lg p-5">
+      <div class="text-sm text-gray-500">Total candidaturas</div>
+      <div class="text-3xl font-bold mt-2">{{ kpis.candidaturas_total }}</div>
+    </div>
+    <div class="bg-white shadow rounded-lg p-5">
+      <div class="text-sm text-gray-500">Relatórios pendentes</div>
+      <div class="text-3xl font-bold mt-2">{{ kpis.relatorios_pendentes }}</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="bg-white shadow rounded-lg p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h5 class="text-lg font-semibold">Últimas candidaturas</h5>
+        <a class="text-blue-600 hover:underline text-sm" href="{% url 'candidaturas:empresa_list' %}">Ver todas</a>
+      </div>
+      <ul class="space-y-2">
+        {% for c in ultimas_candidaturas %}
+          <li class="text-gray-700">{{ c.aluno.username }} → {{ c.estagio.titulo }} — <b>{{ c.status }}</b></li>
+        {% empty %}
+          <li class="text-gray-500">Sem candidaturas.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h5 class="text-lg font-semibold">Relatórios pendentes</h5>
+        <a class="text-blue-600 hover:underline text-sm" href="{% url 'relatorios:empresa_list' %}">Ver todos</a>
+      </div>
+      <ul class="space-y-2">
+        {% for r in relatorios_pendentes_lista %}
+          <li class="text-gray-700">{{ r.candidatura.aluno.username }} — {{ r.candidatura.estagio.titulo }}</li>
+        {% empty %}
+          <li class="text-gray-500">Sem relatórios pendentes.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+{% else %}
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <div class="bg-white shadow rounded-lg p-5">
+      <div class="text-sm text-gray-500">Avaliações pendentes</div>
+      <div class="text-3xl font-bold mt-2">{{ kpis.avaliacoes_pendentes }}</div>
+    </div>
+    <div class="bg-white shadow rounded-lg p-5">
+      <div class="text-sm text-gray-500">Avaliações feitas</div>
+      <div class="text-3xl font-bold mt-2">{{ kpis.avaliacoes_feitas }}</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="bg-white shadow rounded-lg p-5">
+      <h5 class="text-lg font-semibold mb-3">Avaliações pendentes</h5>
+      <ul class="space-y-2">
+        {% for c in avaliacoes_pendentes_lista %}
+          <li class="text-gray-700">{{ c.aluno.username }} — {{ c.estagio.titulo }}</li>
+        {% empty %}
+          <li class="text-gray-500">Sem avaliações pendentes.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-5">
+      <h5 class="text-lg font-semibold mb-3">Últimas avaliações</h5>
+      <ul class="space-y-2">
+        {% for a in ultimas_avaliacoes %}
+          <li class="text-gray-700">{{ a.candidatura.aluno.username }} — Nota: <b>{{ a.nota }}</b></li>
+        {% empty %}
+          <li class="text-gray-500">Sem avaliações.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-2xl font-semibold">Avaliações (Orientador)</h2>
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="text-left px-4 py-3">Aluno</th>
+          <th class="text-left px-4 py-3">Estágio</th>
+          <th class="text-left px-4 py-3">Estado</th>
+          <th class="text-right px-4 py-3">Ação</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y">
+        {% for c in candidaturas %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3">
+            {{ c.aluno.username }}
+          </td>
+
+          <td class="px-4 py-3">
+            <div class="font-semibold">{{ c.estagio.titulo }}</div>
+            <div class="text-gray-500 text-xs">
+              {{ c.estagio.area }} • {{ c.estagio.duracao_meses }} meses
+            </div>
+          </td>
+
+          <td class="px-4 py-3">
+            {% if c.avaliacao %}
+              <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">
+                Avaliado
+              </span>
+            {% else %}
+              <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">
+                Por avaliar
+              </span>
+            {% endif %}
+          </td>
+
+          <td class="px-4 py-3 text-right">
+            <div class="flex justify-end gap-2 flex-wrap">
+              <a
+                href="{% url 'avaliacoes:criar_editar' c.id %}"
+                class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition"
+              >
+                Criar/Editar
+              </a>
+
+              {% if c.avaliacao %}
+                <a
+                  href="{% url 'certificados:upload' c.id %}"
+                  class="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700 transition"
+                >
+                  Enviar certificado
+                </a>
+
+                {% if c.certificado_pdf %}
+                  <a
+                    href="{{ c.certificado_pdf.url }}"
+                    target="_blank"
+                    class="border border-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-100 transition"
+                  >
+                    Ver certificado
+                  </a>
+                {% endif %}
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+
+        {% empty %}
+        <tr>
+          <td colspan="4" class="p-6">
+            <div class="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800">
+              Sem candidaturas aceites.
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

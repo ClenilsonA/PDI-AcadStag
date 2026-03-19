@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-2xl font-semibold">Relatórios (Aluno)</h2>
+</div>
+
+<div class="mb-6 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-blue-800">
+  Aqui aparecem apenas candidaturas <b>ACEITES</b>. Submete ou atualiza o teu relatório em PDF.
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="text-left px-4 py-3">Estágio</th>
+          <th class="text-left px-4 py-3">Empresa</th>
+          <th class="text-left px-4 py-3">Estado</th>
+          <th class="text-right px-4 py-3">Ações</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y">
+
+        {% for c in candidaturas %}
+        <tr class="hover:bg-gray-50">
+
+          <td class="px-4 py-3">
+            <a
+              href="{% url 'estagios:detail' c.estagio.id %}"
+              class="font-semibold text-blue-600 hover:underline"
+            >
+              {{ c.estagio.titulo }}
+            </a>
+            <div class="text-gray-500 text-xs">
+              {{ c.estagio.area }} • {{ c.estagio.duracao_meses }} meses
+            </div>
+          </td>
+
+          <td class="px-4 py-3">
+            {{ c.estagio.empresa.nome }}
+          </td>
+
+          <td class="px-4 py-3">
+            {% if c.relatorio %}
+              {% if c.relatorio.estado == "APROVADO" %}
+                <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">
+                  APROVADO
+                </span>
+              {% elif c.relatorio.estado == "REJEITADO" %}
+                <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">
+                  REJEITADO
+                </span>
+              {% else %}
+                <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">
+                  PENDENTE
+                </span>
+              {% endif %}
+            {% else %}
+              <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">
+                NÃO SUBMETIDO
+              </span>
+            {% endif %}
+          </td>
+
+          <td class="px-4 py-3 text-right">
+            <div class="flex justify-end gap-2 flex-wrap">
+              {% if c.relatorio %}
+                <a
+                  href="{{ c.relatorio.ficheiro.url }}"
+                  class="inline-flex items-center rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                >
+                  Ver PDF
+                </a>
+              {% endif %}
+
+              <a
+                href="{% url 'relatorios:upload' c.id %}"
+                class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700 transition"
+              >
+                Submeter/Atualizar
+              </a>
+            </div>
+          </td>
+
+        </tr>
+
+        {% empty %}
+        <tr>
+          <td colspan="4" class="p-6">
+            <div class="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800">
+              Não tens candidaturas aceites.
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+
+    </table>
+  </div>
+
+</div>
+
+{% endblock %}
