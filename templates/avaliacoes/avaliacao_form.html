@@ -11,12 +11,21 @@
       <div><b>Estágio:</b> {{ candidatura.estagio.titulo }}</div>
     </div>
 
-    <form method="post" class="space-y-4">
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
       {% csrf_token %}
+      {{ form.as_p }}
 
-      <div class="space-y-4">
-        {{ form.as_p }}
-      </div>
+      {% if candidatura.certificado_pdf %}
+        <div class="text-sm">
+          <a
+            href="{{ candidatura.certificado_pdf.url }}"
+            target="_blank"
+            class="text-blue-600 hover:underline"
+          >
+            Ver certificado atual
+          </a>
+        </div>
+      {% endif %}
 
       <div class="flex gap-3 pt-2">
         <button
@@ -36,7 +45,7 @@
     </form>
 
     <div class="mt-6 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-blue-800">
-      Dica: usa comentários curtos e objetivos.
+      Dica: usa comentários curtos e objetivos. Também podes anexar o certificado em PDF.
     </div>
 
   </div>

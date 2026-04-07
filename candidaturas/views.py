@@ -1,30 +1,31 @@
-from django.shortcuts import render
-
-# Create your views here.
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
 
+from core.decorators import role_required
+from empresas.utils import get_empresa_profile
 from estagios.models import Estagio
-from .models import Candidatura
+
 from .forms import CandidaturaForm
+from .models import Candidatura
+
 
 @login_required
+@role_required("ALUNO", message="Apenas alunos podem candidatar-se.")
 def criar_candidatura(request, estagio_id):
-    if request.user.role != "ALUNO":
-        messages.error(request, "Apenas alunos podem candidatar-se.")
-        return redirect("estagios:list")
-
     estagio = get_object_or_404(Estagio, id=estagio_id, ativo=True)
 
-    # impedir duplicados
-    if Candidatura.objects.filter(aluno=request.user, estagio=estagio).exists():
+    candidatura_existente = Candidatura.objects.filter(
+        aluno=request.user,
+        estagio=estagio,
+    ).exists()
+    if candidatura_existente:
         messages.info(request, "Já existe uma candidatura para este estágio.")
         return redirect("candidaturas:minhas")
 
     if request.method == "POST":
         form = CandidaturaForm(request.POST, request.FILES)
+
         if form.is_valid():
             candidatura = form.save(commit=False)
             candidatura.aluno = request.user
@@ -36,93 +37,91 @@ def criar_candidatura(request, estagio_id):
     else:
         form = CandidaturaForm()
 
-    return render(
-        request,
-        "candidaturas/candidatura_form.html",
-        {
-            "form": form,
-            "estagio": estagio
-        }
-    )
-    return redirect("candidaturas:minhas")
+    context = {
+        "form": form,
+        "estagio": estagio,
+    }
+    return render(request, "candidaturas/candidatura_form.html", context)
+
 
 @login_required
+@role_required("ALUNO", message="Apenas alunos têm candidaturas.")
 def minhas_candidaturas(request):
-    if request.user.role != "ALUNO":
-        messages.error(request, "Apenas alunos têm candidaturas.")
-        return redirect("estagios:list")
+    candidaturas = (
+        Candidatura.objects.filter(aluno=request.user)
+        .select_related("estagio", "estagio__empresa")
+        .order_by("-data_candidatura")
+    )
 
-    candidaturas = Candidatura.objects.filter(aluno=request.user).order_by("-data_candidatura")
-    return render(request, "candidaturas/minhas_candidaturas.html", {"candidaturas": candidaturas})
+    context = {
+        "candidaturas": candidaturas,
+    }
+    return render(request, "candidaturas/minhas_candidaturas.html", context)
 
-#
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-
-from empresas.models import Empresa
-from .models import Candidatura
-
-def _get_empresa_profile(user):
-    if not user.is_authenticated or user.role != "EMPRESA":
-        return None
-    try:
-        return user.empresa
-    except Empresa.DoesNotExist:
-        return None
 
 @login_required
+@role_required("EMPRESA", message="Acesso restrito a empresas.")
 def empresa_candidaturas(request):
-    empresa = _get_empresa_profile(request.user)
+    empresa = get_empresa_profile(request.user)
     if not empresa:
-        messages.error(request, "Acesso restrito a empresas.")
+        messages.error(request, "Perfil de empresa não encontrado.")
         return redirect("estagios:list")
 
-    candidaturas = Candidatura.objects.filter(estagio__empresa=empresa).select_related("aluno", "estagio").order_by("-data_candidatura")
-    return render(request, "candidaturas/empresa_candidaturas.html", {"candidaturas": candidaturas})
+    candidaturas = (
+        Candidatura.objects.filter(estagio__empresa=empresa)
+        .select_related("aluno", "estagio", "estagio__empresa")
+        .order_by("-data_candidatura")
+    )
+
+    context = {
+        "candidaturas": candidaturas,
+    }
+    return render(request, "candidaturas/empresa_candidaturas.html", context)
+
 
 @login_required
+@role_required("EMPRESA", message="Acesso restrito a empresas.")
 def alterar_estado(request, pk, novo_estado):
-    empresa = _get_empresa_profile(request.user)
+    empresa = get_empresa_profile(request.user)
     if not empresa:
-        messages.error(request, "Acesso restrito a empresas.")
+        messages.error(request, "Perfil de empresa não encontrado.")
         return redirect("estagios:list")
 
-    candidatura = get_object_or_404(Candidatura, pk=pk, estagio__empresa=empresa)
-
-    estados_validos = ["ACEITE", "REJEITADO", "PENDENTE"]
+    estados_validos = {"ACEITE", "REJEITADO", "PENDENTE"}
     if novo_estado not in estados_validos:
         messages.error(request, "Estado inválido.")
         return redirect("candidaturas:empresa_list")
 
+    candidatura = get_object_or_404(
+        Candidatura,
+        pk=pk,
+        estagio__empresa=empresa,
+    )
+
     candidatura.status = novo_estado
-    candidatura.save()
+    candidatura.save(update_fields=["status"])
+
     messages.success(request, f"Estado atualizado para {novo_estado}.")
     return redirect("candidaturas:empresa_list")
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from .models import Candidatura
 
 @login_required
+@role_required("ALUNO", message="Acesso restrito a alunos.")
 def acompanhamento_estagio(request, pk):
-    if request.user.role != "ALUNO":
-        messages.error(request, "Acesso restrito a alunos.")
-        return redirect("estagios:list")
+    candidatura = get_object_or_404(
+        Candidatura.objects.select_related("estagio", "estagio__empresa"),
+        pk=pk,
+        aluno=request.user,
+    )
 
-    candidatura = get_object_or_404(Candidatura, pk=pk, aluno=request.user)
-
-    # estes campos existem graças aos related_name:
     relatorio = getattr(candidatura, "relatorio", None)
     avaliacao = getattr(candidatura, "avaliacao", None)
+    certificado = getattr(candidatura, "certificado_pdf", None)
 
-    return render(
-        request,
-        "candidaturas/acompanhamento.html",
-        {
-            "candidatura": candidatura,
-            "relatorio": relatorio,
-            "avaliacao": avaliacao,
-        },
-    )
+    context = {
+        "candidatura": candidatura,
+        "relatorio": relatorio,
+        "avaliacao": avaliacao,
+        "certificado": certificado,
+    }
+    return render(request, "candidaturas/acompanhamento.html", context)

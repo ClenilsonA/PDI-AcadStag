@@ -1,19 +1,19 @@
 {% extends "base.html" %}
+{% load status_tags %}
+
 {% block content %}
 
 <div class="flex justify-between items-center mb-6">
-  <h2 class="text-2xl font-semibold">Relatórios (Aluno)</h2>
+  <h2 class="text-2xl font-semibold">Relatórios</h2>
 </div>
 
-<div class="mb-6 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-blue-800">
-  Aqui aparecem apenas candidaturas <b>ACEITES</b>. Submete ou atualiza o teu relatório em PDF.
+<div class="mb-6 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+  Aqui aparecem apenas candidaturas <b>aceites</b>. Submete ou atualiza o teu relatório em PDF.
 </div>
 
-<div class="bg-white shadow rounded-lg overflow-hidden">
-
+<div class="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
   <div class="overflow-x-auto">
     <table class="min-w-full text-sm">
-
       <thead class="bg-gray-100 text-gray-700">
         <tr>
           <th class="text-left px-4 py-3">Estágio</th>
@@ -24,7 +24,6 @@
       </thead>
 
       <tbody class="divide-y">
-
         {% for c in candidaturas %}
         <tr class="hover:bg-gray-50">
 
@@ -46,21 +45,11 @@
 
           <td class="px-4 py-3">
             {% if c.relatorio %}
-              {% if c.relatorio.estado == "APROVADO" %}
-                <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">
-                  APROVADO
-                </span>
-              {% elif c.relatorio.estado == "REJEITADO" %}
-                <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">
-                  REJEITADO
-                </span>
-              {% else %}
-                <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">
-                  PENDENTE
-                </span>
-              {% endif %}
+              <span class="px-2 py-1 rounded text-xs font-semibold {{ c.relatorio.estado|status_badge }}">
+                {{ c.relatorio.estado }}
+              </span>
             {% else %}
-              <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">
+              <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-semibold">
                 NÃO SUBMETIDO
               </span>
             {% endif %}
@@ -71,6 +60,7 @@
               {% if c.relatorio %}
                 <a
                   href="{{ c.relatorio.ficheiro.url }}"
+                  target="_blank"
                   class="inline-flex items-center rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
                 >
                   Ver PDF
@@ -97,12 +87,10 @@
           </td>
         </tr>
         {% endfor %}
-
       </tbody>
 
     </table>
   </div>
-
 </div>
 
 {% endblock %}

@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load status_tags %}
+
 {% block content %}
 
 <div class="flex justify-between items-center mb-6">
@@ -21,6 +23,7 @@
       <tbody class="divide-y">
         {% for c in candidaturas %}
         <tr class="hover:bg-gray-50">
+          
           <td class="px-4 py-3">
             {{ c.aluno.username }}
           </td>
@@ -33,19 +36,9 @@
           </td>
 
           <td class="px-4 py-3">
-            {% if c.status == "ACEITE" %}
-              <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
-                ACEITE
-              </span>
-            {% elif c.status == "REJEITADO" %}
-              <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700">
-                REJEITADO
-              </span>
-            {% else %}
-              <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-700">
-                PENDENTE
-              </span>
-            {% endif %}
+            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium {{ c.status|status_badge }}">
+              {{ c.status }}
+            </span>
           </td>
 
           <td class="px-4 py-3 text-gray-600">
@@ -54,6 +47,7 @@
 
           <td class="px-4 py-3">
             <div class="flex justify-end gap-2 flex-wrap">
+
               <a
                 href="{% url 'candidaturas:alterar_estado' c.id 'ACEITE' %}"
                 class="inline-block rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 transition"
@@ -88,8 +82,10 @@
                   Sem CV
                 </span>
               {% endif %}
+
             </div>
           </td>
+
         </tr>
 
         {% empty %}

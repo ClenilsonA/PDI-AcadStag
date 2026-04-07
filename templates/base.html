@@ -1,132 +1,82 @@
 {% load static tailwind_tags %}
 <!doctype html>
-<html lang="pt">
-  <head>
+<html lang="pt-br">
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AcadStag</title>
+    <title>{% block title %}AcadStag{% endblock %}</title>
     {% tailwind_css %}
-  </head>
+</head>
 
-  <body class="bg-gray-50 text-gray-900">
-    <!-- Navbar -->
-  <nav class="bg-gray-900 text-white shadow">
-    <div class="w-full px-6 py-3 "> 
-      <div class="flex items-center justify-between h-16">
-          <!-- Brand -->
-          <a class="flex items-center gap-1" href="{% url 'home' %}">
-            <img
-              src="{% static 'images/logo.png' %}"
-              alt="AcadStag"
-              class="h-16 w-auto"
-            />
-            <span class="hidden sm:inline text-sm font-light text-gray-200">
-              {% if user.is_authenticated %} Olá, {{ user.username }} {% else %}
-              Olá, seja bem-vindo a AcadStag {% endif %}
-            </span>
-          </a>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased">
 
-          <!-- Links -->
-          <div class="flex items-center gap-3">
-            {% if user.is_authenticated %}
-            <a
-              class="text-sm text-gray-200 hover:text-white"
-              href="{% url 'perfis:perfil' %}"
-              >Perfil</a
-            >
-            <a
-              class="text-sm text-gray-200 hover:text-white"
-              href="{% url 'dashboard:home' %}"
-              >Dashboard</a
-            >
-
-            {% if user.role == "ALUNO" %}
-            <a
-              class="text-sm text-gray-200 hover:text-white"
-              href="{% url 'candidaturas:minhas' %}"
-              >Candidaturas</a
-            >
-            <a
-              class="text-sm text-gray-200 hover:text-white"
-              href="{% url 'relatorios:aluno_list' %}"
-              >Relatórios</a
-            >
-            <a
-              class="text-sm text-gray-200 hover:text-white"
-              href="{% url 'avaliacoes:aluno_list' %}"
-              >Avaliações</a
-            >
-            {% endif %} {% if user.role == "EMPRESA" %}
-            <a
-              class="text-sm text-gray-200 hover:text-white"
-              href="{% url 'estagios:empresa_list' %}"
-              >Meus Estágios</a
-            >
-            <a
-              class="text-sm text-gray-200 hover:text-white"
-              href="{% url 'candidaturas:empresa_list' %}"
-              >Candidaturas</a
-            >
-            <a
-              class="text-sm text-gray-200 hover:text-white"
-              href="{% url 'relatorios:empresa_list' %}"
-              >Relatórios</a
-            >
-            {% endif %} {% if user.role == "ORIENTADOR" %}
-            <a
-              class="text-sm text-gray-200 hover:text-white"
-              href="{% url 'avaliacoes:orientador_list' %}"
-              >Avaliações</a
-            >
-            {% endif %}
-
-            <a
-              class="ml-2 inline-flex items-center rounded-md border border-gray-300/40 px-3 py-1.5 text-sm text-white hover:bg-white/10"
-              href="{% url 'accounts:logout' %}"
-            >
-              Sair
+    <nav class="bg-gray-900 text-white shadow-lg">
+        <div class="w-full px-6 h-20 flex items-center justify-between">
+            
+            <a href="{% url 'home' %}" class="flex items-center hover:opacity-80 transition-opacity">
+                <img src="{% static 'images/logo.PNG' %}" alt="AcadStag Logo" class="h-40 w-auto" />
             </a>
 
-            {% else %}
-            <a
-              class="inline-flex items-center rounded-md bg-white px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-100"
-              href="{% url 'accounts:login' %}"
-            >
-              Entrar
-            </a>
+            <div class="flex items-center gap-5">
+                {% if user.is_authenticated %}
+                    
+                    <a href="{% url 'perfis:perfil' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Perfil</a>
+                    <a href="{% url 'dashboard:home' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Dashboard</a>
 
-            <a
-              class="inline-flex items-center rounded-md border border-white/30 px-3 py-1.5 text-sm text-white hover:bg-white/10"
-              href="{% url 'accounts:register_aluno' %}"
-            >
-              Criar conta Aluno
-            </a>
+                    {% if user.role == "ALUNO" %}
+                        <a href="{% url 'candidaturas:minhas' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Candidaturas</a>
+                        <a href="{% url 'relatorios:aluno_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Relatórios</a>
+                        <a href="{% url 'avaliacoes:aluno_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Avaliações</a>
+                    
+                    {% elif user.role == "EMPRESA" %}
+                        <a href="{% url 'estagios:empresa_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Meus Estágios</a>
+                        <a href="{% url 'candidaturas:empresa_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Candidaturas</a>
+                        <a href="{% url 'relatorios:empresa_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Relatórios</a>
+                    
+                    {% elif user.role == "ORIENTADOR" %}
+                        <a href="{% url 'avaliacoes:orientador_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Avaliações</a>
+                    {% endif %}
 
-            <a
-              class="inline-flex items-center rounded-md border border-white/30 px-3 py-1.5 text-sm text-white hover:bg-white/10"
-              href="{% url 'accounts:register_empresa' %}"
-            >
-              Criar conta Empresa
-            </a>
-            {% endif %}
-          </div>
+                    <a href="{% url 'accounts:logout' %}" 
+                       class="ml-2 inline-flex items-center rounded-md border border-white/20 px-4 py-2 text-sm text-white hover:bg-white/10 transition-all">
+                        Sair
+                    </a>
+
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" 
+                       class="inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-100 transition-all">
+                        Entrar
+                    </a>
+                    
+                    <a href="{% url 'accounts:register_aluno' %}" 
+                       class="inline-flex items-center rounded-md border border-white/30 px-4 py-2 text-sm text-white hover:bg-white/10 transition-all">
+                        Sou Aluno
+                    </a>
+
+                    <a href="{% url 'accounts:register_empresa' %}" 
+                       class="inline-flex items-center rounded-md border border-white/30 px-4 py-2 text-sm text-white hover:bg-white/10 transition-all">
+                        Sou Empresa
+                    </a>
+                {% endif %}
+            </div>
         </div>
-      </div>
     </nav>
 
-    <!-- Content -->
-   <main class="w-full px-4 sm:px-6 lg:px-8 py-6">
-      {% if messages %}
-      <div class="space-y-3 mb-4">
-        {% for message in messages %}
-        <div
-          class="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900"
-        >
-          {{ message }}
-         </div>
-        {% endfor %}
-      </div>
-      {% endif %} {% block content %}{% endblock %}
+    <main class="w-full px-4 sm:px-6 lg:px-8 py-8">
+        
+        {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                    <div class="p-4 rounded-lg border border-blue-200 bg-blue-50 text-sm text-blue-800 shadow-sm animate-pulse-subtle">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
     </main>
-  </body>
+
+</body>
 </html>
+

@@ -1,80 +1,92 @@
-
 {% extends "base.html" %}
+{% load status_tags %}
+
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h2 class="m-0">Relatórios recebidos (Empresa)</h2>
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-2xl font-semibold">Relatórios recebidos</h2>
 </div>
 
-<div class="card shadow-sm">
-  <div class="card-body p-0">
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="table-light">
-          <tr>
-            <th>Aluno</th>
-            <th>Estágio</th>
-            <th>Ficheiro</th>
-            <th>Estado</th>
-            <th class="text-end">Ações</th>
-          </tr>
-        </thead>
+<div class="bg-white shadow rounded-lg overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="text-left px-4 py-3">Aluno</th>
+          <th class="text-left px-4 py-3">Estágio</th>
+          <th class="text-left px-4 py-3">Ficheiro</th>
+          <th class="text-left px-4 py-3">Estado</th>
+          <th class="text-right px-4 py-3">Ações</th>
+        </tr>
+      </thead>
 
-        <tbody>
-          {% for r in relatorios %}
-          <tr>
-            <td>{{ r.candidatura.aluno.username }}</td>
+      <tbody class="divide-y">
+        {% for r in relatorios %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3">
+            {{ r.candidatura.aluno.username }}
+          </td>
 
-            <td>
-              {{ r.candidatura.estagio.titulo }}
-              <div class="text-muted small">{{ r.candidatura.estagio.area }}</div>
-            </td>
+          <td class="px-4 py-3">
+            <div class="font-semibold">{{ r.candidatura.estagio.titulo }}</div>
+            <div class="text-gray-500 text-xs">
+              {{ r.candidatura.estagio.area }}
+            </div>
+          </td>
 
-            <td>
-              <a class="btn btn-outline-secondary btn-sm" href="{{ r.ficheiro.url }}">
-                Abrir PDF
-              </a>
-            </td>
+          <td class="px-4 py-3">
+            <a
+              href="{{ r.ficheiro.url }}"
+              target="_blank"
+              class="inline-block rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
+            >
+              Abrir PDF
+            </a>
+          </td>
 
-            <td>
-              {% if r.estado == "APROVADO" %}
-                <span class="badge text-bg-success">APROVADO</span>
-              {% elif r.estado == "REJEITADO" %}
-                <span class="badge text-bg-danger">REJEITADO</span>
-              {% else %}
-                <span class="badge text-bg-warning">PENDENTE</span>
-              {% endif %}
-            </td>
+          <td class="px-4 py-3">
+            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium {{ r.estado|status_badge }}">
+              {{ r.estado }}
+            </span>
+          </td>
 
-            <td class="text-end">
-              <a class="btn btn-success btn-sm"
-                 href="{% url 'relatorios:alterar_estado' r.id 'APROVADO' %}">
+          <td class="px-4 py-3">
+            <div class="flex justify-end gap-2 flex-wrap">
+              <a
+                href="{% url 'relatorios:alterar_estado' r.id 'APROVADO' %}"
+                class="inline-block rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 transition"
+              >
                 Aprovar
               </a>
-              <a class="btn btn-danger btn-sm"
-                 href="{% url 'relatorios:alterar_estado' r.id 'REJEITADO' %}">
+
+              <a
+                href="{% url 'relatorios:alterar_estado' r.id 'REJEITADO' %}"
+                class="inline-block rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 transition"
+              >
                 Rejeitar
               </a>
-              <a class="btn btn-outline-secondary btn-sm"
-                 href="{% url 'relatorios:alterar_estado' r.id 'PENDENTE' %}">
+
+              <a
+                href="{% url 'relatorios:alterar_estado' r.id 'PENDENTE' %}"
+                class="inline-block rounded-md bg-yellow-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-yellow-600 transition"
+              >
                 Pendente
               </a>
-            </td>
-          </tr>
+            </div>
+          </td>
+        </tr>
 
-          {% empty %}
-          <tr>
-            <td colspan="5">
-              <div class="p-3">
-                <div class="alert alert-warning mb-0">Sem relatórios submetidos.</div>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-
-      </table>
-    </div>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="p-6">
+            <div class="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800">
+              Sem relatórios submetidos.
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
 

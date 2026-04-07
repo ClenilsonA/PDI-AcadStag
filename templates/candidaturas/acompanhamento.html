@@ -1,198 +1,334 @@
 {% extends "base.html" %}
+{% load status_tags %}
+
 {% block content %}
 
-<div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
-  <div>
-    <h2 class="text-2xl font-semibold">Acompanhamento do Estágio</h2>
-    <div class="text-sm text-gray-500">
-      {{ candidatura.estagio.titulo }} • {{ candidatura.estagio.empresa.nome }}
-    </div>
-  </div>
+<div class="w-full mx-auto py-5 px-4">
 
-  <a
-    href="{% url 'candidaturas:minhas' %}"
-    class="inline-flex items-center rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
-  >
-     Voltar
-  </a>
-</div>
-
-{% if candidatura.status == "REJEITADO" %}
-  <div class="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-800">
-    A tua candidatura foi <b>rejeitada</b>. Podes candidatar-te a outros estágios.
-  </div>
-{% endif %}
-
-<!-- PROGRESSO -->
-<div class="bg-white shadow rounded-lg p-6 mb-6">
-  <h5 class="text-lg font-semibold mb-4">Progresso</h5>
-
-  {% if candidatura.status != "ACEITE" %}
-    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-      <div class="h-3 bg-gray-400 rounded-full" style="width: 0%"></div>
-    </div>
-  {% else %}
-    {% if avaliacao %}
-      <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-        <div class="h-3 bg-green-600 rounded-full" style="width: 100%"></div>
-      </div>
-    {% elif relatorio %}
-      <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-        <div class="h-3 bg-blue-600 rounded-full" style="width: 66%"></div>
-      </div>
-    {% else %}
-      <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-        <div class="h-3 bg-blue-600 rounded-full" style="width: 33%"></div>
-      </div>
-    {% endif %}
-  {% endif %}
-
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 text-center">
-    <div class="border rounded-lg p-3">
-      <div class="font-semibold mb-2">1) Candidatura</div>
-      {% if candidatura.status == "ACEITE" %}
-        <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">ACEITE</span>
-      {% elif candidatura.status == "REJEITADO" %}
-        <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">REJEITADO</span>
-      {% else %}
-        <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">PENDENTE</span>
-      {% endif %}
-    </div>
-
-    <div class="border rounded-lg p-3">
-      <div class="font-semibold mb-2">2) Relatório</div>
-      {% if candidatura.status != "ACEITE" %}
-        <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">Bloqueado</span>
-      {% else %}
-        {% if relatorio %}
-          {% if relatorio.estado == "APROVADO" %}
-            <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">APROVADO</span>
-          {% elif relatorio.estado == "REJEITADO" %}
-            <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">REJEITADO</span>
-          {% else %}
-            <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">PENDENTE</span>
-          {% endif %}
-        {% else %}
-          <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">Não submetido</span>
-        {% endif %}
-      {% endif %}
-    </div>
-
-    <div class="border rounded-lg p-3">
-      <div class="font-semibold mb-2">3) Avaliação</div>
-      {% if candidatura.status != "ACEITE" %}
-        <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">Bloqueado</span>
-      {% else %}
-        {% if avaliacao %}
-          <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Lançada</span>
-        {% else %}
-          <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">Pendente</span>
-        {% endif %}
-      {% endif %}
-    </div>
-  </div>
-</div>
-
-<!-- DETALHES -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-  <div class="bg-white shadow rounded-lg p-6 h-full">
-    <h5 class="text-lg font-semibold mb-3">Candidatura</h5>
-
-    <p class="mb-2">
-      Estado:
-      {% if candidatura.status == "ACEITE" %}
-        <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">ACEITE</span>
-      {% elif candidatura.status == "REJEITADO" %}
-        <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">REJEITADO</span>
-      {% else %}
-        <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">PENDENTE</span>
-      {% endif %}
-    </p>
-
-    <p class="text-sm text-gray-500 mb-0">
-      Submetida em {{ candidatura.data_candidatura|date:"d/m/Y H:i" }}
-    </p>
-  </div>
-
-  <div class="bg-white shadow rounded-lg p-6 h-full">
-    <h5 class="text-lg font-semibold mb-3">Relatório</h5>
-
-    {% if candidatura.status != "ACEITE" %}
-      <div class="rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-gray-700">
-        Só podes submeter relatório após a candidatura ser aceite.
-      </div>
-    {% else %}
-      {% if relatorio %}
-        <p class="mb-3">
-          Estado:
-          {% if relatorio.estado == "APROVADO" %}
-            <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">APROVADO</span>
-          {% elif relatorio.estado == "REJEITADO" %}
-            <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">REJEITADO</span>
-          {% else %}
-            <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">PENDENTE</span>
-          {% endif %}
-        </p>
-
-        <div class="flex gap-2 flex-wrap">
-          <a
-            href="{{ relatorio.ficheiro.url }}"
-            class="inline-flex items-center rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
-          >
-            Ver PDF
-          </a>
-          <a
-            href="{% url 'relatorios:upload' candidatura.id %}"
-            class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700 transition"
-          >
-            Atualizar
-          </a>
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-5">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900">Acompanhamento do Estágio</h1>
+            <p class="text-sm text-gray-500 mt-1">
+                Estado da candidatura e progresso até ao certificado.
+            </p>
         </div>
-      {% else %}
-        <p class="text-gray-500 mb-3">Ainda não submeteste relatório.</p>
-        <a
-          href="{% url 'relatorios:upload' candidatura.id %}"
-          class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700 transition"
-        >
-          Submeter relatório
-        </a>
-      {% endif %}
-    {% endif %}
-  </div>
 
-  <div class="bg-white shadow rounded-lg p-6 h-full">
-    <h5 class="text-lg font-semibold mb-3">Avaliação</h5>
+        <span class="inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold shadow-sm {{ candidatura.status|status_badge }}">
+            {{ candidatura.status }}
+        </span>
+    </div>
 
-    {% if candidatura.status != "ACEITE" %}
-      <div class="rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-gray-700">
-        A avaliação só fica disponível após aceitação.
-      </div>
-    {% else %}
-      {% if avaliacao %}
-        <p class="mb-3">
-          Nota:
-          <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">
-            {{ avaliacao.nota }}
-          </span>
-        </p>
+    <!-- Top summary -->
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-5">
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Estágio</p>
+            <p class="text-sm font-semibold text-gray-900 truncate">{{ candidatura.estagio.titulo }}</p>
+        </div>
 
-        {% if avaliacao.comentario_orientador %}
-          <p class="mb-2"><b>Orientador:</b> {{ avaliacao.comentario_orientador }}</p>
-        {% endif %}
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Empresa</p>
+            <p class="text-sm font-semibold text-gray-900 truncate">{{ candidatura.estagio.empresa.nome }}</p>
+        </div>
 
-        {% if avaliacao.comentario_empresa %}
-          <p class="mb-0"><b>Empresa:</b> {{ avaliacao.comentario_empresa }}</p>
-        {% endif %}
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Área</p>
+            <p class="text-sm font-semibold text-gray-900 truncate">{{ candidatura.estagio.area }}</p>
+        </div>
 
-        {% if not avaliacao.comentario_orientador and not avaliacao.comentario_empresa %}
-          <p class="text-gray-500 mb-0">Sem comentários.</p>
-        {% endif %}
-      {% else %}
-        <p class="text-gray-500 mb-0">Ainda não existe avaliação.</p>
-      {% endif %}
-    {% endif %}
-  </div>
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Data</p>
+            <p class="text-sm font-semibold text-gray-900">{{ candidatura.data_candidatura|date:"d/m/Y" }}</p>
+        </div>
+    </div>
+
+    <!-- Progress tracker -->
+    <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-5 mb-5">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-semibold text-gray-900">Progresso</h3>
+            <p class="text-xs text-gray-500">5 etapas</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
+
+            <!-- Candidatura -->
+            <div class="rounded-2xl border border-green-100 bg-gradient-to-br from-green-50 to-white p-4">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-full bg-green-500 text-white text-sm font-bold shadow-sm">
+                        ✓
+                    </span>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900">Candidatura</p>
+                        <p class="text-[11px] font-medium text-green-600">Concluída</p>
+                    </div>
+                </div>
+                <div class="w-full h-2 rounded-full bg-green-100 overflow-hidden mb-2">
+                    <div class="h-full w-full bg-green-500"></div>
+                </div>
+                <p class="text-xs text-gray-500">Submetida com sucesso.</p>
+            </div>
+
+            <!-- Decisão -->
+            <div class="rounded-2xl border p-4
+                {% if candidatura.status == 'ACEITE' %}
+                    border-green-100 bg-gradient-to-br from-green-50 to-white
+                {% elif candidatura.status == 'REJEITADO' %}
+                    border-red-100 bg-gradient-to-br from-red-50 to-white
+                {% else %}
+                    border-yellow-100 bg-gradient-to-br from-yellow-50 to-white
+                {% endif %}
+            ">
+                <div class="flex items-center gap-3 mb-3">
+                    {% if candidatura.status == "ACEITE" %}
+                        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-green-500 text-white text-sm font-bold shadow-sm">✓</span>
+                    {% elif candidatura.status == "REJEITADO" %}
+                        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-red-500 text-white text-sm font-bold shadow-sm">✕</span>
+                    {% else %}
+                        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-yellow-400 text-white text-sm font-bold shadow-sm">•</span>
+                    {% endif %}
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900">Decisão</p>
+                        {% if candidatura.status == "ACEITE" %}
+                            <p class="text-[11px] font-medium text-green-600">Aceite</p>
+                        {% elif candidatura.status == "REJEITADO" %}
+                            <p class="text-[11px] font-medium text-red-600">Rejeitada</p>
+                        {% else %}
+                            <p class="text-[11px] font-medium text-yellow-600">Em análise</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="w-full h-2 rounded-full bg-gray-100 overflow-hidden mb-2">
+                    {% if candidatura.status == "ACEITE" %}
+                        <div class="h-full w-full bg-green-500"></div>
+                    {% elif candidatura.status == "REJEITADO" %}
+                        <div class="h-full w-full bg-red-500"></div>
+                    {% else %}
+                        <div class="h-full w-1/2 bg-yellow-400"></div>
+                    {% endif %}
+                </div>
+                <p class="text-xs text-gray-500">
+                    {% if candidatura.status == "ACEITE" %}
+                        Confirmada pela empresa.
+                    {% elif candidatura.status == "REJEITADO" %}
+                        Processo encerrado.
+                    {% else %}
+                        Aguardando decisão.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Relatório -->
+            <div class="rounded-2xl border p-4
+                {% if relatorio %}
+                    border-green-100 bg-gradient-to-br from-green-50 to-white
+                {% elif candidatura.status == 'ACEITE' %}
+                    border-yellow-100 bg-gradient-to-br from-yellow-50 to-white
+                {% else %}
+                    border-gray-200 bg-gradient-to-br from-gray-50 to-white
+                {% endif %}
+            ">
+                <div class="flex items-center gap-3 mb-3">
+                    {% if relatorio %}
+                        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-green-500 text-white text-sm font-bold shadow-sm">✓</span>
+                    {% elif candidatura.status == "ACEITE" %}
+                        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-yellow-400 text-white text-sm font-bold shadow-sm">•</span>
+                    {% else %}
+                        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-300 text-white text-sm font-bold shadow-sm">•</span>
+                    {% endif %}
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900">Relatório</p>
+                        {% if relatorio %}
+                            <p class="text-[11px] font-medium text-green-600">Entregue</p>
+                        {% elif candidatura.status == "ACEITE" %}
+                            <p class="text-[11px] font-medium text-yellow-600">Pendente</p>
+                        {% else %}
+                            <p class="text-[11px] font-medium text-gray-500">Bloqueado</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="w-full h-2 rounded-full bg-gray-100 overflow-hidden mb-2">
+                    {% if relatorio %}
+                        <div class="h-full w-full bg-green-500"></div>
+                    {% elif candidatura.status == "ACEITE" %}
+                        <div class="h-full w-1/2 bg-yellow-400"></div>
+                    {% else %}
+                        <div class="h-full w-1/4 bg-gray-300"></div>
+                    {% endif %}
+                </div>
+                <p class="text-xs text-gray-500">
+                    {% if relatorio %}
+                        Já submetido.
+                    {% elif candidatura.status == "ACEITE" %}
+                        Falta enviar.
+                    {% else %}
+                        Disponível após aceitação.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Avaliação -->
+            <div class="rounded-2xl border p-4
+                {% if avaliacao %}
+                    border-green-100 bg-gradient-to-br from-green-50 to-white
+                {% elif relatorio %}
+                    border-yellow-100 bg-gradient-to-br from-yellow-50 to-white
+                {% else %}
+                    border-gray-200 bg-gradient-to-br from-gray-50 to-white
+                {% endif %}
+            ">
+                <div class="flex items-center gap-3 mb-3">
+                    {% if avaliacao %}
+                        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-green-500 text-white text-sm font-bold shadow-sm">✓</span>
+                    {% elif relatorio %}
+                        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-yellow-400 text-white text-sm font-bold shadow-sm">•</span>
+                    {% else %}
+                        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-300 text-white text-sm font-bold shadow-sm">•</span>
+                    {% endif %}
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900">Avaliação</p>
+                        {% if avaliacao %}
+                            <p class="text-[11px] font-medium text-green-600">Concluída</p>
+                        {% elif relatorio %}
+                            <p class="text-[11px] font-medium text-yellow-600">Pendente</p>
+                        {% else %}
+                            <p class="text-[11px] font-medium text-gray-500">Bloqueado</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="w-full h-2 rounded-full bg-gray-100 overflow-hidden mb-2">
+                    {% if avaliacao %}
+                        <div class="h-full w-full bg-green-500"></div>
+                    {% elif relatorio %}
+                        <div class="h-full w-1/2 bg-yellow-400"></div>
+                    {% else %}
+                        <div class="h-full w-1/4 bg-gray-300"></div>
+                    {% endif %}
+                </div>
+                <p class="text-xs text-gray-500">
+                    {% if avaliacao %}
+                        Nota atribuída.
+                    {% elif relatorio %}
+                        Aguardando orientador.
+                    {% else %}
+                        Após relatório.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Certificado -->
+            <div class="rounded-2xl border p-4
+                {% if certificado %}
+                    border-green-100 bg-gradient-to-br from-green-50 to-white
+                {% elif avaliacao %}
+                    border-yellow-100 bg-gradient-to-br from-yellow-50 to-white
+                {% else %}
+                    border-gray-200 bg-gradient-to-br from-gray-50 to-white
+                {% endif %}
+            ">
+                <div class="flex items-center gap-3 mb-3">
+                    {% if certificado %}
+                        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-green-500 text-white text-sm font-bold shadow-sm">✓</span>
+                    {% elif avaliacao %}
+                        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-yellow-400 text-white text-sm font-bold shadow-sm">•</span>
+                    {% else %}
+                        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-300 text-white text-sm font-bold shadow-sm">•</span>
+                    {% endif %}
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900">Certificado</p>
+                        {% if certificado %}
+                            <p class="text-[11px] font-medium text-green-600">Disponível</p>
+                        {% elif avaliacao %}
+                            <p class="text-[11px] font-medium text-yellow-600">Pendente</p>
+                        {% else %}
+                            <p class="text-[11px] font-medium text-gray-500">Bloqueado</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="w-full h-2 rounded-full bg-gray-100 overflow-hidden mb-2">
+                    {% if certificado %}
+                        <div class="h-full w-full bg-green-500"></div>
+                    {% elif avaliacao %}
+                        <div class="h-full w-1/2 bg-yellow-400"></div>
+                    {% else %}
+                        <div class="h-full w-1/4 bg-gray-300"></div>
+                    {% endif %}
+                </div>
+                <p class="text-xs text-gray-500">
+                    {% if certificado %}
+                        Pronto para consulta.
+                    {% elif avaliacao %}
+                        Aguardando emissão.
+                    {% else %}
+                        Após avaliação.
+                    {% endif %}
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bottom compact panels -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+            <h4 class="text-sm font-semibold text-gray-900 mb-3">Resumo</h4>
+
+            <div class="space-y-3">
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-sm text-gray-600">Relatório</span>
+                    {% if relatorio %}
+                        <span class="px-2 py-1 rounded text-xs font-semibold {{ relatorio.estado|status_badge }}">
+                            {{ relatorio.estado }}
+                        </span>
+                    {% else %}
+                        <span class="text-xs text-gray-500">Não submetido</span>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-sm text-gray-600">Avaliação</span>
+                    {% if avaliacao %}
+                        <span class="text-sm font-semibold text-gray-900">{{ avaliacao.nota }}</span>
+                    {% else %}
+                        <span class="text-xs text-gray-500">Não disponível</span>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-sm text-gray-600">Certificado</span>
+                    {% if certificado %}
+                        <span class="text-xs font-semibold text-green-600">Disponível</span>
+                    {% else %}
+                        <span class="text-xs text-gray-500">Não emitido</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+            <h4 class="text-sm font-semibold text-gray-900 mb-3">Ações</h4>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                {% if candidatura.status == "ACEITE" and not relatorio %}
+                    <a href="{% url 'relatorios:upload' candidatura.id %}"
+                       class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 transition">
+                        Enviar relatório
+                    </a>
+                {% endif %}
+
+                {% if certificado %}
+                    <a href="{{ certificado.url }}"
+                       class="inline-flex items-center justify-center rounded-xl bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 transition">
+                        Abrir certificado
+                    </a>
+                {% endif %}
+
+                <a href="{% url 'candidaturas:minhas' %}"
+                   class="inline-flex items-center justify-center rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+                    Voltar
+                </a>
+            </div>
+        </div>
+    </div>
 
 </div>
 

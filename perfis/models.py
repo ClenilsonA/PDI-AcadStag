@@ -1,14 +1,19 @@
 from django.db import models
-
-# Create your models here.
-
-from django.db import models
-from django.conf import settings
+from users.models import User
 
 class Perfil(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     telefone = models.CharField(max_length=30, blank=True)
-    curso = models.CharField(max_length=120, blank=True)  # usado no ALUNO
+    curso = models.CharField(max_length=120, blank=True)
+
+    orientador = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="alunos_orientados",
+        limit_choices_to={"role": "ORIENTADOR"},
+    )
 
     def __str__(self):
         return f"Perfil de {self.user.username}"

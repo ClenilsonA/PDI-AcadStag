@@ -1,73 +1,127 @@
-from django.shortcuts import render
-
-# Create your views here.
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from estagios.models import Estagio
-from candidaturas.models import Candidatura
-from relatorios.models import Relatorio
+from core.decorators import role_required
 from avaliacoes.models import Avaliacao
+from candidaturas.models import Candidatura
+from estagios.models import Estagio
+from relatorios.models import Relatorio
 
-@login_required
-def dashboard_view(request):
-    user = request.user
-    ctx = {}
 
-    # ---------------- ALUNO ----------------
-    if user.role == "ALUNO":
-        minhas = Candidatura.objects.filter(aluno=user)
+def _build_aluno_context(user):
+    candidaturas = (
+        Candidatura.objects.filter(aluno=user)
+        .select_related("estagio", "estagio__empresa")
+        .order_by("-data_candidatura")
+    )
 
-        ctx["kpis"] = {
-            "pendentes": minhas.filter(status="PENDENTE").count(),
-            "aceites": minhas.filter(status="ACEITE").count(),
-            "rejeitadas": minhas.filter(status="REJEITADO").count(),
+    candidaturas_aceites = candidaturas.filter(status="ACEITE")
+
+    return {
+        "kpis": {
+            "pendentes": candidaturas.filter(status="PENDENTE").count(),
+            "aceites": candidaturas_aceites.count(),
+            "rejeitadas": candidaturas.filter(status="REJEITADO").count(),
             "avaliadas": Avaliacao.objects.filter(candidatura__aluno=user).count(),
+        },
+        "ultimas_candidaturas": candidaturas[:5],
+        "estagios_recentes": Estagio.objects.filter(ativo=True).order_by("-data_criacao")[:5],
+        "relatorios_pendentes": [
+            candidatura
+            for candidatura in candidaturas_aceites
+            if not hasattr(candidatura, "relatorio")
+        ],
+    }
+
+
+def _build_empresa_context(user):
+    empresa = getattr(user, "empresa", None)
+
+    if not empresa:
+        return {
+            "kpis": {
+                "estagios_ativos": 0,
+                "candidaturas_pendentes": 0,
+                "candidaturas_total": 0,
+                "relatorios_pendentes": 0,
+            },
+            "meus_estagios": [],
+            "ultimas_candidaturas": [],
+            "relatorios_pendentes_lista": [],
         }
 
-        ctx["ultimas_candidaturas"] = minhas.order_by("-data_candidatura")[:5]
-        ctx["estagios_recentes"] = Estagio.objects.filter(ativo=True).order_by("-data_criacao")[:5]
+    estagios = Estagio.objects.filter(empresa=empresa).order_by("-data_criacao")
+    candidaturas = (
+        Candidatura.objects.filter(estagio__empresa=empresa)
+        .select_related("aluno", "estagio")
+        .order_by("-data_candidatura")
+    )
+    relatorios_pendentes = (
+        Relatorio.objects.filter(
+            candidatura__estagio__empresa=empresa,
+            estado="PENDENTE",
+        )
+        .select_related("candidatura", "candidatura__aluno", "candidatura__estagio")
+        .order_by("-data_submissao")
+    )
 
-        # relatórios pendentes = candidaturas aceites sem relatório
-        aceites_ids = minhas.filter(status="ACEITE").values_list("id", flat=True)
-        ctx["relatorios_pendentes"] = [c for c in minhas.filter(status="ACEITE") if not hasattr(c, "relatorio")]
-
-    # ---------------- EMPRESA ----------------
-    elif user.role == "EMPRESA":
-        meus_estagios = Estagio.objects.filter(empresa=user.empresa)
-
-        candidaturas = Candidatura.objects.filter(estagio__empresa=user.empresa)
-
-        ctx["kpis"] = {
-            "estagios_ativos": meus_estagios.filter(ativo=True).count(),
+    return {
+        "kpis": {
+            "estagios_ativos": estagios.filter(ativo=True).count(),
             "candidaturas_pendentes": candidaturas.filter(status="PENDENTE").count(),
             "candidaturas_total": candidaturas.count(),
-            "relatorios_pendentes": Relatorio.objects.filter(candidatura__estagio__empresa=user.empresa, estado="PENDENTE").count(),
-        }
+            "relatorios_pendentes": relatorios_pendentes.count(),
+        },
+        "meus_estagios": estagios[:5],
+        "ultimas_candidaturas": candidaturas[:5],
+        "relatorios_pendentes_lista": relatorios_pendentes[:5],
+    }
 
-        ctx["meus_estagios"] = meus_estagios.order_by("-data_criacao")[:5]
-        ctx["ultimas_candidaturas"] = candidaturas.order_by("-data_candidatura")[:5]
-        ctx["relatorios_pendentes_lista"] = Relatorio.objects.filter(
-            candidatura__estagio__empresa=user.empresa,
-            estado="PENDENTE"
-        ).order_by("-data_submissao")[:5]
 
-    # ---------------- ORIENTADOR ----------------
+def _build_orientador_context(user):
+    candidaturas_aceites = (
+        Candidatura.objects.filter(
+            status="ACEITE",
+            aluno__perfil__orientador=user,
+        )
+        .select_related("aluno", "estagio", "estagio__empresa")
+        .order_by("-data_candidatura")
+    )
+
+    avaliacoes = (
+        Avaliacao.objects.filter(candidatura__aluno__perfil__orientador=user)
+        .select_related("candidatura", "candidatura__aluno", "candidatura__estagio")
+        .order_by("-id")
+    )
+
+    avaliacoes_pendentes = [
+        candidatura
+        for candidatura in candidaturas_aceites
+        if not hasattr(candidatura, "avaliacao")
+    ]
+
+    return {
+        "kpis": {
+            "avaliacoes_pendentes": len(avaliacoes_pendentes),
+            "avaliacoes_feitas": avaliacoes.count(),
+        },
+        "avaliacoes_pendentes_lista": avaliacoes_pendentes[:5],
+        "ultimas_avaliacoes": avaliacoes[:5],
+    }
+
+
+@login_required
+@role_required("ALUNO", "EMPRESA", "ORIENTADOR", "ADMIN", message="Acesso não autorizado.")
+def dashboard_view(request):
+    user = request.user
+
+    if user.role == "ALUNO":
+        context = _build_aluno_context(user)
+    elif user.role == "EMPRESA":
+        context = _build_empresa_context(user)
+    elif user.role == "ORIENTADOR":
+        context = _build_orientador_context(user)
     else:
-        # se no teu projeto o orientador vê avaliações via candidaturas aceites,
-        # mostramos tudo pendente (candidaturas aceites sem avaliação)
-        aceites = Candidatura.objects.filter(status="ACEITE")
+        context = {}
 
-        pendentes = [c for c in aceites if not hasattr(c, "avaliacao")]
-        feitas = Avaliacao.objects.all()
-
-        ctx["kpis"] = {
-            "avaliacoes_pendentes": len(pendentes),
-            "avaliacoes_feitas": feitas.count(),
-        }
-
-        ctx["avaliacoes_pendentes_lista"] = pendentes[:5]
-        ctx["ultimas_avaliacoes"] = feitas.order_by("-id")[:5]
-
-    return render(request, "dashboard/home.html", ctx)
+    return render(request, "dashboard/home.html", context)
