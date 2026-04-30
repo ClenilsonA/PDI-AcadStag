@@ -1,60 +1,103 @@
 {% extends "base.html" %}
+
 {% block content %}
+<div class="max-w-4xl mx-auto py-8 space-y-6">
 
-<div class="flex justify-center py-10">
-  <div class="w-full max-w-2xl bg-white shadow rounded-lg p-6">
-
-    <h2 class="text-2xl font-semibold mb-2">Candidatar-se</h2>
-    <p class="text-gray-500 mb-6">
-      <b>Estágio:</b> {{ estagio.titulo }}
-    </p>
-
-    <form method="post" enctype="multipart/form-data" class="space-y-4">
-      {% csrf_token %}
-
-      <!-- CV -->
-      <div>
-        <label class="block text-sm font-medium mb-1">
-          Curriculum Vitae (PDF) *
-        </label>
-
-        <input
-          type="file"
-          name="cv"
-          accept="application/pdf"
-          required
-          class="w-full border border-gray-300 rounded px-3 py-2
-                 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        >
-
-        {% if form.cv.errors %}
-        <p class="text-red-500 text-sm mt-1">
-          {{ form.cv.errors }}
-        </p>
-        {% endif %}
-      </div>
-
-      <div class="flex gap-2">
-        <button
-          type="submit"
-          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          Submeter candidatura
-        </button>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <p class="text-sm text-gray-500 mb-1">Área do aluno</p>
+            <h1 class="text-3xl font-bold text-gray-900">Candidatar-se</h1>
+            <p class="text-sm text-gray-600 mt-1">
+                Submete os documentos necessários para formalizar a tua candidatura.
+            </p>
+        </div>
 
         <a
-          href="{% url 'estagios:detail' estagio.id %}"
-          class="border border-gray-300 px-4 py-2 rounded hover:bg-gray-100">
-          Cancelar
+            href="{% url 'estagios:detail' estagio.id %}"
+            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+        >
+            Voltar ao estágio
         </a>
-      </div>
-
-    </form>
-
-    <div class="mt-6 bg-blue-50 border border-blue-200 p-3 rounded text-blue-700">
-      O CV deve ser submetido em <b>PDF</b>.
     </div>
 
-  </div>
-</div>
+    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-5">
+        <div>
+            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Estágio</p>
+            <h2 class="text-xl font-semibold text-gray-900">
+                {{ estagio.titulo }}
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">
+                {{ estagio.empresa.nome }}
+            </p>
+        </div>
 
+        <div class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+            <p class="text-sm text-blue-900">
+                <strong>Documentos obrigatórios:</strong> deves submeter o CV e o comprovativo de frequência universitária, ambos em PDF.
+            </p>
+        </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-100">
+            <h2 class="text-xl font-semibold text-gray-900">Documentos da candidatura</h2>
+            <p class="text-sm text-gray-500 mt-1">
+                Estes documentos serão consultados pela empresa durante a análise da candidatura.
+            </p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="p-6 space-y-6">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    {{ form.cv.label }} <span class="text-red-600">*</span>
+                </label>
+                {{ form.cv }}
+                {% if form.cv.errors %}
+                    <p class="text-sm text-red-600 mt-1">{{ form.cv.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    {{ form.comprovativo_frequencia.label }} <span class="text-red-600">*</span>
+                </label>
+                {{ form.comprovativo_frequencia }}
+                {% if form.comprovativo_frequencia.errors %}
+                    <p class="text-sm text-red-600 mt-1">{{ form.comprovativo_frequencia.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+                <p class="text-sm text-blue-900">
+                    <strong>Nota:</strong> só são aceites ficheiros em formato PDF.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 pt-4">
+                <button
+                    type="submit"
+                    class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
+                >
+                    Submeter candidatura
+                </button>
+
+                <a
+                    href="{% url 'estagios:detail' estagio.id %}"
+                    class="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300 transition"
+                >
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>
 {% endblock %}

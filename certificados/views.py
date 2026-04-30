@@ -3,44 +3,85 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from core.decorators import role_required
-from candidaturas.models import Candidatura
+from processos.models import ProcessoEstagio
 
-from .forms import CertificadoUploadForm
+from .forms import CertificadoForm
+from .models import Certificado
 
 
 @login_required
-@role_required("ORIENTADOR", redirect_url="dashboard:home", message="Apenas orientadores podem enviar certificados.")
-def upload_certificado(request, candidatura_id):
-    candidatura = get_object_or_404(
-        Candidatura.objects.select_related("aluno", "aluno__perfil", "estagio"),
-        id=candidatura_id,
+@role_required("ADMIN", message="Acesso restrito aos serviços académicos.")
+def emitir_certificado(request, processo_id):
+    processo = get_object_or_404(
+        ProcessoEstagio.objects.select_related(
+            "candidatura",
+            "candidatura__aluno",
+            "candidatura__estagio",
+            "candidatura__estagio__empresa",
+        ),
+        pk=processo_id,
     )
 
-    perfil_aluno = getattr(candidatura.aluno, "perfil", None)
-    if not perfil_aluno or perfil_aluno.orientador != request.user:
-        messages.error(request, "Só podes enviar certificados para alunos que te estão atribuídos.")
-        return redirect("avaliacoes:orientador_list")
+    if processo.estado != ProcessoEstagio.Estado.CONCLUIDO:
+        messages.error(
+            request,
+            "Só é possível emitir certificado depois do processo estar concluído.",
+        )
+        return redirect("processos:detalhe", pk=processo.pk)
 
-    if candidatura.status != "ACEITE":
-        messages.error(request, "Só é possível enviar certificado para candidaturas aceites.")
-        return redirect("avaliacoes:orientador_list")
+    if not processo.nota_publicada or processo.nota_final is None:
+        messages.error(
+            request,
+            "Só é possível emitir certificado depois da nota final estar lançada e publicada.",
+        )
+        return redirect("processos:detalhe", pk=processo.pk)
 
-    if not hasattr(candidatura, "avaliacao"):
-        messages.error(request, "Só podes enviar certificado depois da avaliação.")
-        return redirect("avaliacoes:orientador_list")
+    certificado = getattr(processo, "certificado", None)
 
     if request.method == "POST":
-        form = CertificadoUploadForm(request.POST, request.FILES, instance=candidatura)
+        form = CertificadoForm(request.POST, request.FILES, instance=certificado)
 
         if form.is_valid():
-            form.save()
-            messages.success(request, "Certificado enviado com sucesso.")
-            return redirect("avaliacoes:orientador_list")
+            certificado_guardado = form.save(commit=False)
+            certificado_guardado.processo = processo
+            certificado_guardado.emitido_por = request.user
+            certificado_guardado.save()
+
+            messages.success(request, "Certificado guardado com sucesso.")
+            return redirect("processos:detalhe", pk=processo.pk)
     else:
-        form = CertificadoUploadForm(instance=candidatura)
+        form = CertificadoForm(instance=certificado)
 
     context = {
         "form": form,
-        "candidatura": candidatura,
+        "processo": processo,
+        "certificado": certificado,
     }
-    return render(request, "certificados/upload_certificado.html", context)
+    return render(request, "certificados/emitir_certificado.html", context)
+
+
+@login_required
+@role_required("ALUNO", message="Acesso restrito a alunos.")
+def aluno_certificado(request, processo_id):
+    processo = get_object_or_404(
+        ProcessoEstagio.objects.select_related(
+            "candidatura",
+            "candidatura__aluno",
+            "candidatura__estagio",
+            "candidatura__estagio__empresa",
+        ),
+        pk=processo_id,
+        candidatura__aluno=request.user,
+    )
+
+    certificado = getattr(processo, "certificado", None)
+
+    if not certificado or not certificado.ativo:
+        messages.error(request, "O certificado ainda não está disponível.")
+        return redirect("candidaturas:minhas")
+
+    context = {
+        "processo": processo,
+        "certificado": certificado,
+    }
+    return render(request, "certificados/aluno_certificado.html", context)

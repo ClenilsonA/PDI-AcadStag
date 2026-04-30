@@ -1,16 +1,15 @@
 from django import forms
 
 from core.forms import BaseTailwindForm
-from candidaturas.models import Candidatura
+
+from .models import Certificado
 
 
-class CertificadoUploadForm(BaseTailwindForm):
+class CertificadoForm(BaseTailwindForm, forms.ModelForm):
     class Meta:
-        model = Candidatura
-        fields = ["certificado_pdf"]
-        labels = {
-            "certificado_pdf": "Certificado (PDF)",
-        }
-        widgets = {
-            "certificado_pdf": forms.ClearableFileInput(),
-        }
+        model = Certificado
+        fields = [
+            "ficheiro",
+            "observacoes",
+            "ativo",
+        ]

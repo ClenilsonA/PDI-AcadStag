@@ -1,11 +1,36 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import AvaliacaoEntidade, AvaliacaoOrientador
 
-from django.contrib import admin
-from .models import Avaliacao
 
-@admin.register(Avaliacao)
-class AvaliacaoAdmin(admin.ModelAdmin):
-    list_display = ("candidatura", "nota", "data_avaliacao")
-    list_filter = ("nota",)
+@admin.register(AvaliacaoOrientador)
+class AvaliacaoOrientadorAdmin(admin.ModelAdmin):
+    list_display = (
+        "processo",
+        "orientador",
+        "nota_teorica",
+        "criada_em",
+    )
+    search_fields = (
+        "processo__candidatura__aluno__username",
+        "processo__candidatura__estagio__titulo",
+        "orientador__username",
+    )
+    list_filter = ("criada_em",)
+
+
+@admin.register(AvaliacaoEntidade)
+class AvaliacaoEntidadeAdmin(admin.ModelAdmin):
+    list_display = (
+        "processo",
+        "supervisor_nome_snapshot",
+        "nota_pratica",
+        "submetida_por",
+        "criada_em",
+    )
+    search_fields = (
+        "processo__candidatura__aluno__username",
+        "processo__candidatura__estagio__titulo",
+        "supervisor_nome_snapshot",
+    )
+    list_filter = ("criada_em",)

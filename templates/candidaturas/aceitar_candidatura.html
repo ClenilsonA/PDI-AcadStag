@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 space-y-6">
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <p class="text-sm text-gray-500 mb-1">Área da empresa</p>
+            <h1 class="text-3xl font-bold text-gray-900">Aceitar candidatura</h1>
+            <p class="text-sm text-gray-600 mt-1">
+                Para aceitar a candidatura, define o supervisor, o local e as datas do estágio.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'candidaturas:empresa_list' %}"
+            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+        >
+            Voltar às candidaturas
+        </a>
+    </div>
+
+    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-5">
+        <div>
+            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Candidatura</p>
+            <h2 class="text-xl font-semibold text-gray-900">
+                {{ candidatura.estagio.titulo }}
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">
+                {{ candidatura.estagio.area|default:"Área não definida" }}
+                {% if candidatura.estagio.duracao_meses %}
+                    · {{ candidatura.estagio.duracao_meses }} meses
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-5">
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Aluno</p>
+                <p class="font-semibold text-gray-900">
+                    {{ candidatura.aluno.get_full_name|default:candidatura.aluno.username }}
+                </p>
+                {% if candidatura.aluno.email %}
+                    <p class="text-sm text-gray-500">{{ candidatura.aluno.email }}</p>
+                {% endif %}
+            </div>
+
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Estado atual</p>
+                <p class="font-semibold text-yellow-700">
+                    {{ candidatura.get_status_display }}
+                </p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+            {% if candidatura.cv %}
+                <a
+                    href="{{ candidatura.cv.url }}"
+                    target="_blank"
+                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                >
+                    Ver CV
+                </a>
+            {% endif %}
+
+            {% if candidatura.comprovativo_frequencia %}
+                <a
+                    href="{{ candidatura.comprovativo_frequencia.url }}"
+                    target="_blank"
+                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                >
+                    Ver comprovativo
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-100">
+            <h2 class="text-xl font-semibold text-gray-900">Dados operacionais do estágio</h2>
+            <p class="text-sm text-gray-500 mt-1">
+                Estes dados serão usados no processo de estágio e poderão ser editados posteriormente pela empresa.
+            </p>
+        </div>
+
+        <form method="post" class="p-6 space-y-6">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Supervisor da entidade</h3>
+
+                <div class="grid md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.supervisor_nome.label }} <span class="text-red-600">*</span>
+                        </label>
+                        {{ form.supervisor_nome }}
+                        {% if form.supervisor_nome.errors %}
+                            <p class="text-sm text-red-600 mt-1">{{ form.supervisor_nome.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.supervisor_email.label }}
+                        </label>
+                        {{ form.supervisor_email }}
+                        {% if form.supervisor_email.errors %}
+                            <p class="text-sm text-red-600 mt-1">{{ form.supervisor_email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.supervisor_telefone.label }}
+                        </label>
+                        {{ form.supervisor_telefone }}
+                        {% if form.supervisor_telefone.errors %}
+                            <p class="text-sm text-red-600 mt-1">{{ form.supervisor_telefone.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.supervisor_cargo.label }}
+                        </label>
+                        {{ form.supervisor_cargo }}
+                        {% if form.supervisor_cargo.errors %}
+                            <p class="text-sm text-red-600 mt-1">{{ form.supervisor_cargo.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-100 pt-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Local e período do estágio</h3>
+
+                <div class="grid md:grid-cols-3 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.local_estagio.label }} <span class="text-red-600">*</span>
+                        </label>
+                        {{ form.local_estagio }}
+                        {% if form.local_estagio.errors %}
+                            <p class="text-sm text-red-600 mt-1">{{ form.local_estagio.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.data_inicio.label }} <span class="text-red-600">*</span>
+                        </label>
+                        {{ form.data_inicio }}
+                        {% if form.data_inicio.errors %}
+                            <p class="text-sm text-red-600 mt-1">{{ form.data_inicio.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ form.data_fim.label }} <span class="text-red-600">*</span>
+                        </label>
+                        {{ form.data_fim }}
+                        {% if form.data_fim.errors %}
+                            <p class="text-sm text-red-600 mt-1">{{ form.data_fim.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-xl border border-green-100 bg-green-50 px-4 py-3">
+                <p class="text-sm text-green-900">
+                    <strong>Ao confirmar:</strong> a candidatura será aceite e será criado ou atualizado o processo de estágio do aluno.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 pt-4">
+                <button
+                    type="submit"
+                    class="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition"
+                >
+                    Confirmar aceitação
+                </button>
+
+                <a
+                    href="{% url 'candidaturas:empresa_list' %}"
+                    class="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300 transition"
+                >
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

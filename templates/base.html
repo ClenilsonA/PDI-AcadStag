@@ -26,15 +26,16 @@
                     {% if user.role == "ALUNO" %}
                         <a href="{% url 'candidaturas:minhas' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Candidaturas</a>
                         <a href="{% url 'relatorios:aluno_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Relatórios</a>
-                        <a href="{% url 'avaliacoes:aluno_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Avaliações</a>
                     
                     {% elif user.role == "EMPRESA" %}
                         <a href="{% url 'estagios:empresa_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Meus Estágios</a>
                         <a href="{% url 'candidaturas:empresa_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Candidaturas</a>
-                        <a href="{% url 'relatorios:empresa_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Relatórios</a>
                     
                     {% elif user.role == "ORIENTADOR" %}
-                        <a href="{% url 'avaliacoes:orientador_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Avaliações</a>
+                        <a href="{% url 'processos:orientador_lista' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Meus alunos</a>
+
+                    {% elif user.role == "ADMIN" %}
+                        <a href="{% url 'processos:lista' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Processos</a>
                     {% endif %}
 
                     <a href="{% url 'accounts:logout' %}" 
@@ -79,4 +80,3 @@
 
 </body>
 </html>
-

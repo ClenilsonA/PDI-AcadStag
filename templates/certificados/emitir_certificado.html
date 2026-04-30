@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 space-y-6">
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <p class="text-sm text-gray-500 mb-1">Serviços Académicos</p>
+            <h1 class="text-3xl font-bold text-gray-900">Emitir certificado</h1>
+            <p class="text-sm text-gray-600 mt-1">
+                Carrega ou atualiza o certificado final do processo de estágio.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'processos:detalhe' processo.pk %}"
+            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+        >
+            Voltar ao processo
+        </a>
+    </div>
+
+    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-5">
+        <div>
+            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Processo</p>
+            <h2 class="text-xl font-semibold text-gray-900">
+                {{ processo.candidatura.estagio.titulo }}
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">
+                {{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}
+                ·
+                {{ processo.candidatura.estagio.empresa.nome }}
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Estado</p>
+                <p class="font-semibold text-gray-900">{{ processo.get_estado_display }}</p>
+            </div>
+
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Nota final</p>
+                <p class="font-semibold text-gray-900">
+                    {{ processo.nota_final|default:"Não lançada" }}
+                </p>
+            </div>
+
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Nota publicada</p>
+                <p class="font-semibold {% if processo.nota_publicada %}text-green-700{% else %}text-yellow-700{% endif %}">
+                    {% if processo.nota_publicada %}Sim{% else %}Não{% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-100">
+            <h2 class="text-xl font-semibold text-gray-900">Dados do certificado</h2>
+            <p class="text-sm text-gray-500 mt-1">
+                O aluno só conseguirá consultar o certificado se estiver ativo.
+            </p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="p-6 space-y-6">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    {{ form.ficheiro.label }}
+                </label>
+                {{ form.ficheiro }}
+                {% if form.ficheiro.errors %}
+                    <p class="text-sm text-red-600 mt-1">{{ form.ficheiro.errors.0 }}</p>
+                {% endif %}
+
+                {% if certificado and certificado.ficheiro %}
+                    <p class="text-sm text-gray-600 mt-2">
+                        Certificado atual:
+                        <a href="{{ certificado.ficheiro.url }}" target="_blank" class="text-blue-600 hover:underline">
+                            Ver ficheiro
+                        </a>
+                    </p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    {{ form.observacoes.label }}
+                </label>
+                {{ form.observacoes }}
+                {% if form.observacoes.errors %}
+                    <p class="text-sm text-red-600 mt-1">{{ form.observacoes.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <label class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                {{ form.ativo }}
+                <span class="text-sm font-medium text-gray-700">
+                    {{ form.ativo.label }}
+                </span>
+            </label>
+
+            <div class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+                <p class="text-sm text-blue-900">
+                    <strong>Nota:</strong> o certificado deve ser emitido apenas depois da nota final estar lançada e publicada.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 pt-4">
+                <button
+                    type="submit"
+                    class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
+                >
+                    Guardar certificado
+                </button>
+
+                <a
+                    href="{% url 'processos:detalhe' processo.pk %}"
+                    class="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300 transition"
+                >
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

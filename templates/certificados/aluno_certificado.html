@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 space-y-6">
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <p class="text-sm text-gray-500 mb-1">Área do aluno</p>
+            <h1 class="text-3xl font-bold text-gray-900">Certificado final</h1>
+            <p class="text-sm text-gray-600 mt-1">
+                Consulta o certificado emitido pelos Serviços Académicos.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'candidaturas:minhas' %}"
+            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+        >
+            Voltar às candidaturas
+        </a>
+    </div>
+
+    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-5">
+        <div>
+            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Estágio</p>
+            <h2 class="text-xl font-semibold text-gray-900">
+                {{ processo.candidatura.estagio.titulo }}
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">
+                {{ processo.candidatura.estagio.empresa.nome }}
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Aluno</p>
+                <p class="font-semibold text-gray-900">
+                    {{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}
+                </p>
+            </div>
+
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Nota final</p>
+                <p class="font-semibold text-gray-900">
+                    {{ processo.nota_final|default:"Não publicada" }}
+                </p>
+            </div>
+
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Emitido em</p>
+                <p class="font-semibold text-gray-900">
+                    {{ certificado.emitido_em|date:"d/m/Y H:i" }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-5">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <h2 class="text-xl font-semibold text-gray-900">Documento</h2>
+                <p class="text-sm text-gray-600 mt-1">
+                    Este documento foi disponibilizado pelos Serviços Académicos.
+                </p>
+            </div>
+
+            <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                Disponível
+            </span>
+        </div>
+
+        {% if certificado.ficheiro %}
+            <a
+                href="{{ certificado.ficheiro.url }}"
+                target="_blank"
+                class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
+            >
+                Abrir certificado
+            </a>
+        {% else %}
+            <div class="rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3">
+                <p class="text-sm text-yellow-800">
+                    O certificado foi emitido, mas ainda não tem ficheiro associado.
+                </p>
+            </div>
+        {% endif %}
+
+        {% if certificado.observacoes %}
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Observações</p>
+                <p class="text-sm text-gray-700">
+                    {{ certificado.observacoes }}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

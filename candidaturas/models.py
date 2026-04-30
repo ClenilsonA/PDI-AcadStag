@@ -1,14 +1,15 @@
-from django.db import models
 from django.core.validators import FileExtensionValidator
-from users.models import User
+from django.db import models
+
 from estagios.models import Estagio
+from users.models import User
 
 
 class Candidatura(models.Model):
     class Status(models.TextChoices):
-        PENDENTE = "PENDENTE", "Pendente"
+        SUBMETIDA = "SUBMETIDA", "Submetida"
         ACEITE = "ACEITE", "Aceite"
-        REJEITADO = "REJEITADO", "Rejeitado"
+        REJEITADA = "REJEITADA", "Rejeitada"
 
     aluno = models.ForeignKey(
         User,
@@ -20,35 +21,34 @@ class Candidatura(models.Model):
     estagio = models.ForeignKey(
         Estagio,
         on_delete=models.CASCADE,
-        related_name="candidaturas"
+        related_name="candidaturas",
+    )
+
+    cv = models.FileField(
+        upload_to="candidaturas/cv/",
+        validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
+        null=True,
+        blank=True,
+    )
+
+    comprovativo_frequencia = models.FileField(
+        upload_to="candidaturas/comprovativos/",
+        validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
+        null=True,
+        blank=True,
     )
 
     status = models.CharField(
         max_length=20,
         choices=Status.choices,
-        default=Status.PENDENTE
+        default=Status.SUBMETIDA,
     )
 
     data_candidatura = models.DateTimeField(auto_now_add=True)
 
-    cv = models.FileField(
-        upload_to="cvs/",
-        validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
-        verbose_name="CV em PDF",
-        null=True,
-        blank=True,
-    )
-
-    certificado_pdf = models.FileField(
-    upload_to="certificados/",
-    validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
-    null=True,
-    blank=True,
-    verbose_name="Certificado em PDF"
-    )
-
     class Meta:
         unique_together = ("aluno", "estagio")
+        ordering = ["-data_candidatura"]
 
     def __str__(self):
-        return f"{self.aluno.username} -> {self.estagio.titulo} ({self.status})"
+        return f"{self.aluno.username} -> {self.estagio.titulo}"

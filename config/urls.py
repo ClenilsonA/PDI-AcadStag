@@ -35,6 +35,7 @@ urlpatterns = [
     path("", include("perfis.urls")),
     path("", include("dashboard.urls")),
     path("certificados/", include("certificados.urls")),
+    path("processos/", include("processos.urls")),
 ]
 
 if settings.DEBUG:

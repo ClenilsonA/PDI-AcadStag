@@ -2,95 +2,143 @@
 {% load status_tags %}
 
 {% block content %}
+<div class="max-w-7xl mx-auto py-8 space-y-6">
 
-<div class="flex justify-between items-center mb-6">
-  <h2 class="text-2xl font-semibold">Relatórios</h2>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <p class="text-sm text-gray-500 mb-1">Área do aluno</p>
+            <h1 class="text-3xl font-bold text-gray-900">Relatórios finais</h1>
+            <p class="text-sm text-gray-600 mt-1">
+                Submete ou atualiza o relatório final dos teus estágios aceites.
+            </p>
+        </div>
+
+        <div class="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm">
+            {{ candidaturas|length }} candidatura{% if candidaturas|length != 1 %}s{% endif %} aceite{% if candidaturas|length != 1 %}s{% endif %}
+        </div>
+    </div>
+
+    <div class="rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4">
+        <p class="text-sm text-blue-900">
+            <strong>Nota:</strong> só aparecem candidaturas aceites. O relatório deve ser submetido em PDF e será consultado pelo orientador para a avaliação teórica.
+        </p>
+    </div>
+
+    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-900">Lista de relatórios</h2>
+            <p class="text-sm text-gray-500 mt-1">
+                Acompanha o estado do relatório e atualiza o ficheiro quando necessário.
+            </p>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gray-50 text-gray-600">
+                    <tr>
+                        <th class="text-left px-6 py-3 font-semibold">Estágio</th>
+                        <th class="text-left px-6 py-3 font-semibold">Empresa</th>
+                        <th class="text-left px-6 py-3 font-semibold">Relatório</th>
+                        <th class="text-right px-6 py-3 font-semibold">Ações</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-100">
+                    {% for c in candidaturas %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4">
+                            <a
+                                href="{% url 'estagios:detail' c.estagio.id %}"
+                                class="font-semibold text-gray-900 hover:text-blue-600 transition"
+                            >
+                                {{ c.estagio.titulo }}
+                            </a>
+                            <div class="text-xs text-gray-500 mt-1">
+                                {{ c.estagio.area|default:"Área não definida" }}
+                                {% if c.estagio.duracao_meses %}
+                                    · {{ c.estagio.duracao_meses }} meses
+                                {% endif %}
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4 text-gray-700">
+                            {{ c.estagio.empresa.nome }}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {% if c.relatorio %}
+                                <div class="space-y-1">
+                                    {% if c.relatorio.estado == "PENDENTE" %}
+                                        <span class="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
+                                            Pendente
+                                        </span>
+                                    {% elif c.relatorio.estado == "APROVADO" %}
+                                        <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                                            Aprovado
+                                        </span>
+                                    {% elif c.relatorio.estado == "REJEITADO" %}
+                                        <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
+                                            Rejeitado
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium {{ c.relatorio.estado|status_badge }}">
+                                            {{ c.relatorio.estado }}
+                                        </span>
+                                    {% endif %}
+
+                                    {% if c.relatorio.data_submissao %}
+                                        <div class="text-xs text-gray-500">
+                                            Submetido em {{ c.relatorio.data_submissao|date:"d/m/Y H:i" }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+                                    Não submetido
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex justify-end gap-2 flex-wrap">
+                                {% if c.relatorio and c.relatorio.ficheiro %}
+                                    <a
+                                        href="{{ c.relatorio.ficheiro.url }}"
+                                        target="_blank"
+                                        class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                                    >
+                                        Ver PDF
+                                    </a>
+                                {% endif %}
+
+                                <a
+                                    href="{% url 'relatorios:upload' c.id %}"
+                                    class="inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 transition"
+                                >
+                                    {% if c.relatorio %}
+                                        Atualizar relatório
+                                    {% else %}
+                                        Submeter relatório
+                                    {% endif %}
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="p-8">
+                            <div class="rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-4 text-center text-sm text-yellow-800">
+                                Ainda não tens candidaturas aceites para submeter relatório.
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
 </div>
-
-<div class="mb-6 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-  Aqui aparecem apenas candidaturas <b>aceites</b>. Submete ou atualiza o teu relatório em PDF.
-</div>
-
-<div class="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
-  <div class="overflow-x-auto">
-    <table class="min-w-full text-sm">
-      <thead class="bg-gray-100 text-gray-700">
-        <tr>
-          <th class="text-left px-4 py-3">Estágio</th>
-          <th class="text-left px-4 py-3">Empresa</th>
-          <th class="text-left px-4 py-3">Estado</th>
-          <th class="text-right px-4 py-3">Ações</th>
-        </tr>
-      </thead>
-
-      <tbody class="divide-y">
-        {% for c in candidaturas %}
-        <tr class="hover:bg-gray-50">
-
-          <td class="px-4 py-3">
-            <a
-              href="{% url 'estagios:detail' c.estagio.id %}"
-              class="font-semibold text-blue-600 hover:underline"
-            >
-              {{ c.estagio.titulo }}
-            </a>
-            <div class="text-gray-500 text-xs">
-              {{ c.estagio.area }} • {{ c.estagio.duracao_meses }} meses
-            </div>
-          </td>
-
-          <td class="px-4 py-3">
-            {{ c.estagio.empresa.nome }}
-          </td>
-
-          <td class="px-4 py-3">
-            {% if c.relatorio %}
-              <span class="px-2 py-1 rounded text-xs font-semibold {{ c.relatorio.estado|status_badge }}">
-                {{ c.relatorio.estado }}
-              </span>
-            {% else %}
-              <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-semibold">
-                NÃO SUBMETIDO
-              </span>
-            {% endif %}
-          </td>
-
-          <td class="px-4 py-3 text-right">
-            <div class="flex justify-end gap-2 flex-wrap">
-              {% if c.relatorio %}
-                <a
-                  href="{{ c.relatorio.ficheiro.url }}"
-                  target="_blank"
-                  class="inline-flex items-center rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
-                >
-                  Ver PDF
-                </a>
-              {% endif %}
-
-              <a
-                href="{% url 'relatorios:upload' c.id %}"
-                class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700 transition"
-              >
-                Submeter/Atualizar
-              </a>
-            </div>
-          </td>
-
-        </tr>
-
-        {% empty %}
-        <tr>
-          <td colspan="4" class="p-6">
-            <div class="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800">
-              Não tens candidaturas aceites.
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-
-    </table>
-  </div>
-</div>
-
 {% endblock %}

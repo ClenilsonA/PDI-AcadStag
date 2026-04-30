@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'theme',
     'certificados',
     'core',
+    'processos',
     
 ]
 

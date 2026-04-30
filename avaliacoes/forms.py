@@ -1,9 +1,17 @@
 from django import forms
 
-from .models import Avaliacao
+from core.forms import BaseTailwindForm
+
+from .models import AvaliacaoEntidade, AvaliacaoOrientador
 
 
-class AvaliacaoForm(forms.ModelForm):
+class AvaliacaoOrientadorForm(BaseTailwindForm, forms.ModelForm):
     class Meta:
-        model = Avaliacao
-        fields = ["nota", "comentario_orientador", "comentario_empresa"]
+        model = AvaliacaoOrientador
+        fields = ["nota_teorica", "comentario"]
+
+
+class AvaliacaoEntidadeForm(BaseTailwindForm, forms.ModelForm):
+    class Meta:
+        model = AvaliacaoEntidade
+        fields = ["nota_pratica", "comentario"]

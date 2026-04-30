@@ -1,21 +1,46 @@
+from django.conf import settings
 from django.db import models
-from candidaturas.models import Candidatura
-from users.models import User
+
+from processos.models import ProcessoEstagio
 
 
 class Certificado(models.Model):
-    candidatura = models.OneToOneField(
-        Candidatura,
+    processo = models.OneToOneField(
+        ProcessoEstagio,
         on_delete=models.CASCADE,
-        related_name="certificado"
+        related_name="certificado",
+        null=True,
+        blank=True,
     )
-    orientador = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        limit_choices_to={"role": "ORIENTADOR"},
-        related_name="certificados_emitidos"
+
+    ficheiro = models.FileField(
+        upload_to="certificados/",
+        null=True,
+        blank=True,
     )
-    data_emissao = models.DateTimeField(auto_now_add=True)
+
+    emitido_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="certificados_emitidos",
+        limit_choices_to={"role": "ADMIN"},
+    )
+
+    observacoes = models.TextField(blank=True)
+    ativo = models.BooleanField(default=True)
+
+    emitido_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-emitido_em"]
 
     def __str__(self):
-        return f"Certificado - {self.candidatura.aluno.username} - {self.candidatura.estagio.titulo}"
+        if self.processo:
+            aluno = self.processo.candidatura.aluno.username
+            estagio = self.processo.candidatura.estagio.titulo
+            return f"Certificado - {aluno} - {estagio}"
+
+        return "Certificado sem processo associado"
