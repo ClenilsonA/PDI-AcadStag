@@ -4,78 +4,529 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>{% block title %}AcadStag{% endblock %}</title>
+
     {% tailwind_css %}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root {
+
+            /* BRAND COLORS */
+
+            --teal: #2DD4BF;
+            --teal-dk: #14B8A6;
+
+            --purple: #6D28D9;
+            --purple-hover: #5B21B6;
+
+            --purple-lt: #F3E8FF;
+
+            --gold: #F59E0B;
+
+            /* NEUTRALS */
+
+            --ink: #0F172A;
+            --ink-mid: #64748B;
+
+            --surface: #F8FAFC;
+
+            --border: #E2E8F0;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+
+            margin: 0;
+
+            font-family: 'Inter', sans-serif;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    #ffffff,
+                    var(--surface)
+                );
+
+            color: var(--ink);
+
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ───────────────────────────────────── */
+        /* NAVBAR                               */
+        /* ───────────────────────────────────── */
+
+        .nav-root {
+
+            position: sticky;
+            top: 0;
+            z-index: 50;
+
+            background:
+                rgba(255,255,255,.90);
+
+            backdrop-filter: blur(14px);
+
+            border-bottom:
+                1px solid rgba(226,232,240,.8);
+
+            box-shadow:
+                0 2px 12px rgba(15,23,42,.04);
+        }
+
+        .nav-inner {
+
+            max-width: 1400px;
+
+            margin: 0 auto;
+
+            padding: 0 2.5rem;
+
+            height: 86px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 2rem;
+        }
+
+        /* LOGO */
+
+        .nav-logo img {
+
+            height: 200px;
+
+            width: auto;
+
+            display: block;
+
+            transition:
+                transform .2s ease,
+                opacity .2s ease;
+        }
+
+        .nav-logo:hover img {
+
+            opacity: .92;
+
+            transform: scale(1.03);
+        }
+
+        /* NAV LINKS */
+
+        .nav-links {
+
+            display: flex;
+            align-items: center;
+
+            gap: .45rem;
+        }
+
+        .nav-link {
+
+            position: relative;
+
+            font-size: .92rem;
+
+            font-weight: 600;
+
+            color: var(--ink-mid);
+
+            padding:
+                .68rem
+                1rem;
+
+            border-radius: 14px;
+
+            text-decoration: none;
+
+            transition:
+                all .2s ease;
+
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+
+            color: var(--purple);
+
+            background:
+                rgba(109,40,217,.08);
+
+            transform:
+                translateY(-1px);
+        }
+
+        /* ACTIVE STYLE FEEL */
+
+        .nav-link:focus {
+
+            outline: none;
+
+            color: var(--purple);
+
+            background:
+                rgba(109,40,217,.10);
+        }
+
+        /* DIVIDER */
+
+        .nav-sep {
+
+            width: 1px;
+            height: 24px;
+
+            background: var(--border);
+
+            margin: 0 .55rem;
+
+            flex-shrink: 0;
+        }
+
+        /* ───────────────────────────────────── */
+        /* BUTTONS                              */
+        /* ───────────────────────────────────── */
+
+        .btn {
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: .4rem;
+
+            border-radius: 16px;
+
+            font-size: .9rem;
+
+            font-weight: 600;
+
+            padding:
+                .72rem
+                1.25rem;
+
+            text-decoration: none;
+
+            transition:
+                all .2s ease;
+
+            white-space: nowrap;
+
+            cursor: pointer;
+        }
+
+        /* PRIMARY */
+
+        .btn-primary {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--teal),
+                    var(--purple)
+                );
+
+            color: #fff;
+
+            border: none;
+
+            box-shadow:
+                0 12px 28px rgba(109,40,217,.18);
+        }
+
+        .btn-primary:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 16px 34px rgba(109,40,217,.24);
+
+            opacity: .98;
+        }
+
+        /* OUTLINE */
+
+        .btn-outline {
+
+            background: #fff;
+
+            color: var(--purple);
+
+            border:
+                1px solid rgba(109,40,217,.15);
+        }
+
+        .btn-outline:hover {
+
+            background:
+                rgba(109,40,217,.05);
+
+            border-color:
+                rgba(109,40,217,.28);
+
+            color:
+                var(--purple-hover);
+        }
+
+        /* GHOST */
+
+        .btn-ghost {
+
+            background: transparent;
+
+            color: var(--ink-mid);
+
+            border:
+                1px solid transparent;
+        }
+
+        .btn-ghost:hover {
+
+            color: #DC2626;
+
+            background: #FEF2F2;
+
+            border-color: #FEE2E2;
+        }
+
+        .btn-ghost svg {
+
+            width: 15px;
+            height: 15px;
+        }
+
+        /* ───────────────────────────────────── */
+        /* MAIN                                 */
+        /* ───────────────────────────────────── */
+
+        .main-content {
+
+            max-width: 1400px;
+
+            margin: 0 auto;
+
+            padding:
+                3rem
+                2rem;
+        }
+
+        /* ───────────────────────────────────── */
+        /* ALERTS                               */
+        /* ───────────────────────────────────── */
+
+        .alert-wrap {
+
+            margin-bottom: 1.5rem;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: .85rem;
+        }
+
+        .alert {
+
+            display: flex;
+            align-items: flex-start;
+
+            gap: .8rem;
+
+            padding:
+                1rem
+                1.2rem;
+
+            border-radius: 18px;
+
+            border:
+                1px solid rgba(45,212,191,.14);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(45,212,191,.08),
+                    rgba(109,40,217,.04)
+                );
+
+            color: #0F766E;
+
+            font-size: .92rem;
+
+            font-weight: 500;
+
+            box-shadow:
+                0 4px 12px rgba(15,23,42,.04);
+
+            animation:
+                slideIn .28s ease;
+        }
+
+        .alert::before {
+
+            content: "✓";
+
+            width: 22px;
+            height: 22px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 999px;
+
+            background:
+                rgba(45,212,191,.12);
+
+            color: var(--teal-dk);
+
+            font-size: .78rem;
+
+            font-weight: 700;
+
+            flex-shrink: 0;
+        }
+
+        @keyframes slideIn {
+
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ───────────────────────────────────── */
+        /* ROLE CHIP                            */
+        /* ───────────────────────────────────── */
+
+        .role-chip {
+
+            display: inline-block;
+
+            font-size: .72rem;
+
+            font-weight: 700;
+
+            letter-spacing: .06em;
+
+            text-transform: uppercase;
+
+            padding:
+                .22rem
+                .68rem;
+
+            border-radius: 999px;
+
+            background:
+                rgba(109,40,217,.08);
+
+            color: var(--purple);
+        }
+
+        /* GLOBAL LINKS */
+
+        a {
+
+            transition:
+                color .18s ease;
+        }
+
+        a:hover {
+
+            color:
+                var(--purple);
+        }
+
+    </style>
 </head>
 
-<body class="bg-gray-50 text-gray-900 font-sans antialiased">
+<body>
 
-    <nav class="bg-gray-900 text-white shadow-lg">
-        <div class="w-full px-6 h-20 flex items-center justify-between">
-            
-            <a href="{% url 'home' %}" class="flex items-center hover:opacity-80 transition-opacity">
-                <img src="{% static 'images/logo.PNG' %}" alt="AcadStag Logo" class="h-40 w-auto" />
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║              NAVBAR                  ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <nav class="nav-root">
+        <div class="nav-inner">
+
+            <!-- Logo -->
+            <a href="{% url 'home' %}" class="nav-logo" style="flex-shrink:0;">
+                <img src="{% static 'images/logo.PNG' %}" alt="AcadStag" />
             </a>
 
-            <div class="flex items-center gap-5">
+            <!-- Links + Actions -->
+            <div class="nav-links">
+
                 {% if user.is_authenticated %}
-                    
-                    <a href="{% url 'perfis:perfil' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Perfil</a>
-                    <a href="{% url 'dashboard:home' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Dashboard</a>
+
+                    <a href="{% url 'perfis:perfil' %}" class="nav-link">Perfil</a>
+                    <a href="{% url 'dashboard:home' %}" class="nav-link">Dashboard</a>
 
                     {% if user.role == "ALUNO" %}
-                        <a href="{% url 'candidaturas:minhas' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Candidaturas</a>
-                        <a href="{% url 'relatorios:aluno_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Relatórios</a>
-                    
-                    {% elif user.role == "EMPRESA" %}
-                        <a href="{% url 'estagios:empresa_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Meus Estágios</a>
-                        <a href="{% url 'candidaturas:empresa_list' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Candidaturas</a>
-                    
-                    {% elif user.role == "ORIENTADOR" %}
-                        <a href="{% url 'processos:orientador_lista' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Meus alunos</a>
+                        <a href="{% url 'candidaturas:minhas' %}" class="nav-link">Candidaturas</a>
+                        <a href="{% url 'relatorios:aluno_list' %}" class="nav-link">Relatórios</a>
 
+                    {% elif user.role == "EMPRESA" %}
+                        <a href="{% url 'estagios:empresa_list' %}" class="nav-link">Meus Estágios</a>
+                        <a href="{% url 'candidaturas:empresa_list' %}" class="nav-link">Candidaturas</a>
+                    
                     {% elif user.role == "ADMIN" %}
-                        <a href="{% url 'processos:lista' %}" class="text-sm text-gray-300 hover:text-white transition-colors">Processos</a>
+                        <a href="{% url 'processos:list' %}" class="nav-link">Processos</a>
+
+                    {% elif user.role == "ORIENTADOR" %}
                     {% endif %}
 
-                    <a href="{% url 'accounts:logout' %}" 
-                       class="ml-2 inline-flex items-center rounded-md border border-white/20 px-4 py-2 text-sm text-white hover:bg-white/10 transition-all">
+                    <span class="nav-sep"></span>
+
+                    <a href="{% url 'accounts:logout' %}" class="btn btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M18 12H9m0 0l3-3m-3 3l3 3" />
+                        </svg>
                         Sair
                     </a>
 
                 {% else %}
-                    <a href="{% url 'accounts:login' %}" 
-                       class="inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-100 transition-all">
-                        Entrar
-                    </a>
-                    
-                    <a href="{% url 'accounts:register_aluno' %}" 
-                       class="inline-flex items-center rounded-md border border-white/30 px-4 py-2 text-sm text-white hover:bg-white/10 transition-all">
-                        Sou Aluno
-                    </a>
 
-                    <a href="{% url 'accounts:register_empresa' %}" 
-                       class="inline-flex items-center rounded-md border border-white/30 px-4 py-2 text-sm text-white hover:bg-white/10 transition-all">
-                        Sou Empresa
-                    </a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary">Entrar</a>
+
+                    <a href="{% url 'accounts:register_aluno' %}" class="btn btn-outline">Sou Aluno</a>
+
+                    <a href="{% url 'accounts:register_empresa' %}" class="btn btn-outline">Sou Empresa</a>
+
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <main class="w-full px-4 sm:px-6 lg:px-8 py-8">
-        
-        {% if messages %}
-            <div class="mb-6 space-y-2">
-                {% for message in messages %}
-                    <div class="p-4 rounded-lg border border-blue-200 bg-blue-50 text-sm text-blue-800 shadow-sm animate-pulse-subtle">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+  
+    <main>
+        <div class="main-content">
 
-        {% block content %}{% endblock %}
+            {% if messages %}
+                <div class="alert-wrap">
+                    {% for message in messages %}
+                        <div class="alert">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+
+        </div>
     </main>
 
 </body>
