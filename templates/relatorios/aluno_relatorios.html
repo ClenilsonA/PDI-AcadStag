@@ -28,7 +28,7 @@
         <div class="px-6 py-5 border-b border-gray-100">
             <h2 class="text-lg font-semibold text-gray-900">Lista de relatórios</h2>
             <p class="text-sm text-gray-500 mt-1">
-                Acompanha o estado do relatório e atualiza o ficheiro quando necessário.
+                Acompanha a avaliação do relatório e atualiza o ficheiro quando necessário.
             </p>
         </div>
 
@@ -38,7 +38,7 @@
                     <tr>
                         <th class="text-left px-6 py-3 font-semibold">Estágio</th>
                         <th class="text-left px-6 py-3 font-semibold">Empresa</th>
-                        <th class="text-left px-6 py-3 font-semibold">Relatório</th>
+                        <th class="text-left px-6 py-3 font-semibold">Avaliação do relatório</th>
                         <th class="text-right px-6 py-3 font-semibold">Ações</th>
                     </tr>
                 </thead>
@@ -66,25 +66,16 @@
                         </td>
 
                         <td class="px-6 py-4">
-                            {% if c.relatorio %}
+                            {% if not c.relatorio %}
+                                <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+                                    Não submetido
+                                </span>
+
+                            {% elif c.processo and c.processo.estado == "CONCLUIDO" %}
                                 <div class="space-y-1">
-                                    {% if c.relatorio.estado == "PENDENTE" %}
-                                        <span class="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
-                                            Pendente
-                                        </span>
-                                    {% elif c.relatorio.estado == "APROVADO" %}
-                                        <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                                            Aprovado
-                                        </span>
-                                    {% elif c.relatorio.estado == "REJEITADO" %}
-                                        <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
-                                            Rejeitado
-                                        </span>
-                                    {% else %}
-                                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium {{ c.relatorio.estado|status_badge }}">
-                                            {{ c.relatorio.estado }}
-                                        </span>
-                                    {% endif %}
+                                    <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                                        Concluído
+                                    </span>
 
                                     {% if c.relatorio.data_submissao %}
                                         <div class="text-xs text-gray-500">
@@ -92,10 +83,32 @@
                                         </div>
                                     {% endif %}
                                 </div>
+
+                            {% elif c.processo and c.processo.avaliacao_orientador %}
+                                <div class="space-y-1">
+                                    <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+                                        Avaliado pelo orientador
+                                    </span>
+
+                                    {% if c.relatorio.data_submissao %}
+                                        <div class="text-xs text-gray-500">
+                                            Submetido em {{ c.relatorio.data_submissao|date:"d/m/Y H:i" }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
                             {% else %}
-                                <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                                    Não submetido
-                                </span>
+                                <div class="space-y-1">
+                                    <span class="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
+                                        A aguardar avaliação
+                                    </span>
+
+                                    {% if c.relatorio.data_submissao %}
+                                        <div class="text-xs text-gray-500">
+                                            Submetido em {{ c.relatorio.data_submissao|date:"d/m/Y H:i" }}
+                                        </div>
+                                    {% endif %}
+                                </div>
                             {% endif %}
                         </td>
 

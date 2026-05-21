@@ -257,6 +257,133 @@
       </div>
     </div>
 
+  {% elif user.role == "ADMIN" %}
+
+    <div class="grid grid-cols-2 xl:grid-cols-5 gap-3 mb-5">
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Total processos</p>
+        <p class="text-2xl font-bold text-blue-600">{{ kpis.processos_total }}</p>
+      </div>
+
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Preparação</p>
+        <p class="text-2xl font-bold text-yellow-600">{{ kpis.processos_preparacao }}</p>
+      </div>
+
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Em curso</p>
+        <p class="text-2xl font-bold text-green-600">{{ kpis.processos_em_curso }}</p>
+      </div>
+
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Em avaliação</p>
+        <p class="text-2xl font-bold text-purple-600">{{ kpis.processos_em_avaliacao }}</p>
+      </div>
+
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Concluídos</p>
+        <p class="text-2xl font-bold text-gray-900">{{ kpis.processos_concluidos }}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-5">
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Pendentes validação</p>
+        <p class="text-2xl font-bold text-orange-600">{{ kpis.pendentes_validacao }}</p>
+      </div>
+
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Certificados emitidos</p>
+        <p class="text-2xl font-bold text-emerald-600">{{ kpis.certificados_emitidos }}</p>
+      </div>
+
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Avaliações práticas</p>
+        <p class="text-2xl font-bold text-indigo-600">{{ kpis.avaliacoes_praticas }}</p>
+      </div>
+
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Avaliações teóricas</p>
+        <p class="text-2xl font-bold text-pink-600">{{ kpis.avaliacoes_teoricas }}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-3">
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold text-gray-900">Processos pendentes de validação</h3>
+          <a href="{% url 'processos:list' %}" class="text-sm text-blue-600 hover:underline">
+            Ver processos
+          </a>
+        </div>
+
+        <div class="space-y-3">
+          {% for processo in processos_pendentes_validacao %}
+            <a
+              href="{% url 'processos:detalhe' processo.pk %}"
+              class="block rounded-xl border border-gray-100 px-3 py-3 hover:bg-gray-50 transition"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-gray-900 truncate">
+                    {{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}
+                  </p>
+                  <p class="text-xs text-gray-500 truncate">
+                    {{ processo.candidatura.estagio.titulo }} · {{ processo.candidatura.estagio.empresa.nome }}
+                  </p>
+                </div>
+
+                <span class="shrink-0 rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
+                  Por validar
+                </span>
+              </div>
+            </a>
+          {% empty %}
+            <div class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
+              Não existem processos pendentes de validação.
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold text-gray-900">Últimos processos</h3>
+          <a href="{% url 'processos:list' %}" class="text-sm text-blue-600 hover:underline">
+            Ver todos
+          </a>
+        </div>
+
+        <div class="space-y-3">
+          {% for processo in ultimos_processos %}
+            <a
+              href="{% url 'processos:detalhe' processo.pk %}"
+              class="block rounded-xl border border-gray-100 px-3 py-3 hover:bg-gray-50 transition"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-gray-900 truncate">
+                    {{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}
+                  </p>
+                  <p class="text-xs text-gray-500 truncate">
+                    {{ processo.candidatura.estagio.titulo }} · {{ processo.candidatura.estagio.empresa.nome }}
+                  </p>
+                </div>
+
+                <span class="shrink-0 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+                  {{ processo.get_estado_display }}
+                </span>
+              </div>
+            </a>
+          {% empty %}
+            <div class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
+              Ainda não existem processos registados.
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
   {% else %}
 
     <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-5">

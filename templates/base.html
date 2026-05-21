@@ -15,28 +15,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-
         :root {
-
-            /* BRAND COLORS */
-
             --teal: #2DD4BF;
             --teal-dk: #14B8A6;
-
             --purple: #6D28D9;
             --purple-hover: #5B21B6;
-
             --purple-lt: #F3E8FF;
-
             --gold: #F59E0B;
-
-            /* NEUTRALS */
-
             --ink: #0F172A;
             --ink-mid: #64748B;
-
             --surface: #F8FAFC;
-
             --border: #E2E8F0;
         }
 
@@ -45,360 +33,185 @@
         }
 
         body {
-
             margin: 0;
-
             font-family: 'Inter', sans-serif;
-
-            background:
-                linear-gradient(
-                    to bottom,
-                    #ffffff,
-                    var(--surface)
-                );
-
+            background: linear-gradient(to bottom, #ffffff, var(--surface));
             color: var(--ink);
-
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ───────────────────────────────────── */
-        /* NAVBAR                               */
-        /* ───────────────────────────────────── */
-
         .nav-root {
-
             position: sticky;
             top: 0;
             z-index: 50;
-
-            background:
-                rgba(255,255,255,.90);
-
+            background: rgba(255,255,255,.90);
             backdrop-filter: blur(14px);
-
-            border-bottom:
-                1px solid rgba(226,232,240,.8);
-
-            box-shadow:
-                0 2px 12px rgba(15,23,42,.04);
+            border-bottom: 1px solid rgba(226,232,240,.8);
+            box-shadow: 0 2px 12px rgba(15,23,42,.04);
         }
 
         .nav-inner {
-
             max-width: 1400px;
-
             margin: 0 auto;
-
             padding: 0 2.5rem;
-
             height: 86px;
-
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             gap: 2rem;
         }
 
-        /* LOGO */
-
         .nav-logo img {
-
             height: 200px;
-
             width: auto;
-
             display: block;
-
-            transition:
-                transform .2s ease,
-                opacity .2s ease;
+            transition: transform .2s ease, opacity .2s ease;
         }
 
         .nav-logo:hover img {
-
             opacity: .92;
-
             transform: scale(1.03);
         }
 
-        /* NAV LINKS */
-
         .nav-links {
-
             display: flex;
             align-items: center;
-
             gap: .45rem;
         }
 
         .nav-link {
-
             position: relative;
-
             font-size: .92rem;
-
             font-weight: 600;
-
             color: var(--ink-mid);
-
-            padding:
-                .68rem
-                1rem;
-
+            padding: .68rem 1rem;
             border-radius: 14px;
-
             text-decoration: none;
-
-            transition:
-                all .2s ease;
-
+            transition: all .2s ease;
             white-space: nowrap;
         }
 
         .nav-link:hover {
-
             color: var(--purple);
-
-            background:
-                rgba(109,40,217,.08);
-
-            transform:
-                translateY(-1px);
+            background: rgba(109,40,217,.08);
+            transform: translateY(-1px);
         }
-
-        /* ACTIVE STYLE FEEL */
 
         .nav-link:focus {
-
             outline: none;
-
             color: var(--purple);
-
-            background:
-                rgba(109,40,217,.10);
+            background: rgba(109,40,217,.10);
         }
 
-        /* DIVIDER */
-
         .nav-sep {
-
             width: 1px;
             height: 24px;
-
             background: var(--border);
-
             margin: 0 .55rem;
-
             flex-shrink: 0;
         }
 
-        /* ───────────────────────────────────── */
-        /* BUTTONS                              */
-        /* ───────────────────────────────────── */
-
         .btn {
-
             display: inline-flex;
             align-items: center;
             justify-content: center;
-
             gap: .4rem;
-
             border-radius: 16px;
-
             font-size: .9rem;
-
             font-weight: 600;
-
-            padding:
-                .72rem
-                1.25rem;
-
+            padding: .72rem 1.25rem;
             text-decoration: none;
-
-            transition:
-                all .2s ease;
-
+            transition: all .2s ease;
             white-space: nowrap;
-
             cursor: pointer;
         }
 
-        /* PRIMARY */
-
         .btn-primary {
-
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--teal),
-                    var(--purple)
-                );
-
+            background: linear-gradient(135deg, var(--teal), var(--purple));
             color: #fff;
-
             border: none;
-
-            box-shadow:
-                0 12px 28px rgba(109,40,217,.18);
+            box-shadow: 0 12px 28px rgba(109,40,217,.18);
         }
 
         .btn-primary:hover {
-
-            transform:
-                translateY(-2px);
-
-            box-shadow:
-                0 16px 34px rgba(109,40,217,.24);
-
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(109,40,217,.24);
             opacity: .98;
         }
 
-        /* OUTLINE */
-
         .btn-outline {
-
             background: #fff;
-
             color: var(--purple);
-
-            border:
-                1px solid rgba(109,40,217,.15);
+            border: 1px solid rgba(109,40,217,.15);
         }
 
         .btn-outline:hover {
-
-            background:
-                rgba(109,40,217,.05);
-
-            border-color:
-                rgba(109,40,217,.28);
-
-            color:
-                var(--purple-hover);
+            background: rgba(109,40,217,.05);
+            border-color: rgba(109,40,217,.28);
+            color: var(--purple-hover);
         }
 
-        /* GHOST */
-
         .btn-ghost {
-
             background: transparent;
-
             color: var(--ink-mid);
-
-            border:
-                1px solid transparent;
+            border: 1px solid transparent;
         }
 
         .btn-ghost:hover {
-
             color: #DC2626;
-
             background: #FEF2F2;
-
             border-color: #FEE2E2;
         }
 
         .btn-ghost svg {
-
             width: 15px;
             height: 15px;
         }
 
-        /* ───────────────────────────────────── */
-        /* MAIN                                 */
-        /* ───────────────────────────────────── */
-
         .main-content {
-
             max-width: 1400px;
-
             margin: 0 auto;
-
-            padding:
-                3rem
-                2rem;
+            padding: 3rem 2rem;
         }
 
-        /* ───────────────────────────────────── */
-        /* ALERTS                               */
-        /* ───────────────────────────────────── */
-
         .alert-wrap {
-
             margin-bottom: 1.5rem;
-
             display: flex;
             flex-direction: column;
-
             gap: .85rem;
         }
 
         .alert {
-
             display: flex;
             align-items: flex-start;
-
             gap: .8rem;
-
-            padding:
-                1rem
-                1.2rem;
-
+            padding: 1rem 1.2rem;
             border-radius: 18px;
-
-            border:
-                1px solid rgba(45,212,191,.14);
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(45,212,191,.08),
-                    rgba(109,40,217,.04)
-                );
-
+            border: 1px solid rgba(45,212,191,.14);
+            background: linear-gradient(135deg, rgba(45,212,191,.08), rgba(109,40,217,.04));
             color: #0F766E;
-
             font-size: .92rem;
-
             font-weight: 500;
-
-            box-shadow:
-                0 4px 12px rgba(15,23,42,.04);
-
-            animation:
-                slideIn .28s ease;
+            box-shadow: 0 4px 12px rgba(15,23,42,.04);
+            animation: slideIn .28s ease;
         }
 
         .alert::before {
-
             content: "✓";
-
             width: 22px;
             height: 22px;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             border-radius: 999px;
-
-            background:
-                rgba(45,212,191,.12);
-
+            background: rgba(45,212,191,.12);
             color: var(--teal-dk);
-
             font-size: .78rem;
-
             font-weight: 700;
-
             flex-shrink: 0;
         }
 
         @keyframes slideIn {
-
             from {
                 opacity: 0;
                 transform: translateY(-6px);
@@ -410,85 +223,75 @@
             }
         }
 
-        /* ───────────────────────────────────── */
-        /* ROLE CHIP                            */
-        /* ───────────────────────────────────── */
-
         .role-chip {
-
             display: inline-block;
-
             font-size: .72rem;
-
             font-weight: 700;
-
             letter-spacing: .06em;
-
             text-transform: uppercase;
-
-            padding:
-                .22rem
-                .68rem;
-
+            padding: .22rem .68rem;
             border-radius: 999px;
-
-            background:
-                rgba(109,40,217,.08);
-
+            background: rgba(109,40,217,.08);
             color: var(--purple);
         }
 
-        /* GLOBAL LINKS */
-
         a {
-
-            transition:
-                color .18s ease;
+            transition: color .18s ease;
         }
 
         a:hover {
-
-            color:
-                var(--purple);
+            color: var(--purple);
         }
-
     </style>
 </head>
 
 <body>
 
-    <!-- ╔══════════════════════════════════════╗ -->
-    <!-- ║              NAVBAR                  ║ -->
-    <!-- ╚══════════════════════════════════════╝ -->
     <nav class="nav-root">
         <div class="nav-inner">
 
-            <!-- Logo -->
-            <a href="{% url 'home' %}" class="nav-logo" style="flex-shrink:0;">
-                <img src="{% static 'images/logo.PNG' %}" alt="AcadStag" />
-            </a>
+            {% if user.is_authenticated and user.role == "ALUNO" %}
+                <a href="{% url 'estagios:list' %}" class="nav-logo" style="flex-shrink:0;">
+                    <img src="{% static 'images/logo.PNG' %}" alt="AcadStag" />
+                </a>
+            {% elif user.is_authenticated %}
+                <a href="{% url 'dashboard:home' %}" class="nav-logo" style="flex-shrink:0;">
+                    <img src="{% static 'images/logo.PNG' %}" alt="AcadStag" />
+                </a>
+            {% else %}
+                <a href="{% url 'home' %}" class="nav-logo" style="flex-shrink:0;">
+                    <img src="{% static 'images/logo.PNG' %}" alt="AcadStag" />
+                </a>
+            {% endif %}
 
-            <!-- Links + Actions -->
             <div class="nav-links">
 
                 {% if user.is_authenticated %}
 
-                    <a href="{% url 'perfis:perfil' %}" class="nav-link">Perfil</a>
-                    <a href="{% url 'dashboard:home' %}" class="nav-link">Dashboard</a>
-
                     {% if user.role == "ALUNO" %}
+                        <a href="{% url 'perfis:perfil' %}" class="nav-link">Perfil</a>
+                        <a href="{% url 'dashboard:home' %}" class="nav-link">Dashboard</a>
+                        <!-- <a href="{% url 'estagios:list' %}" class="nav-link">Estágios</a> -->
                         <a href="{% url 'candidaturas:minhas' %}" class="nav-link">Candidaturas</a>
                         <a href="{% url 'relatorios:aluno_list' %}" class="nav-link">Relatórios</a>
 
                     {% elif user.role == "EMPRESA" %}
+                        <a href="{% url 'perfis:perfil' %}" class="nav-link">Perfil</a>
+                        <a href="{% url 'dashboard:home' %}" class="nav-link">Dashboard</a>
                         <a href="{% url 'estagios:empresa_list' %}" class="nav-link">Meus Estágios</a>
                         <a href="{% url 'candidaturas:empresa_list' %}" class="nav-link">Candidaturas</a>
-                    
+
                     {% elif user.role == "ADMIN" %}
+                        <a href="{% url 'perfis:perfil' %}" class="nav-link">Perfil</a>
+                        <a href="{% url 'dashboard:home' %}" class="nav-link">Dashboard</a>
                         <a href="{% url 'processos:list' %}" class="nav-link">Processos</a>
 
                     {% elif user.role == "ORIENTADOR" %}
-                    {% endif %}
+                        <a href="{% url 'perfis:perfil' %}" class="nav-link">Perfil</a>
+                        <a href="{% url 'dashboard:home' %}" class="nav-link">Dashboard</a>
+                        <a href="{% url 'processos:orientador_lista' %}" class="nav-link">Processos</a>
+                        
+                {% endif %}
 
                     <span class="nav-sep"></span>
 
@@ -502,9 +305,7 @@
                 {% else %}
 
                     <a href="{% url 'accounts:login' %}" class="btn btn-primary">Entrar</a>
-
                     <a href="{% url 'accounts:register_aluno' %}" class="btn btn-outline">Sou Aluno</a>
-
                     <a href="{% url 'accounts:register_empresa' %}" class="btn btn-outline">Sou Empresa</a>
 
                 {% endif %}
@@ -512,7 +313,6 @@
         </div>
     </nav>
 
-  
     <main>
         <div class="main-content">
 

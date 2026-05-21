@@ -10,8 +10,8 @@ def atualizar_estado_processo(processo):
     """
     Atualiza o estado global do processo com base nos dados já preenchidos.
 
-    Regra simples:
-    - CONCLUIDO: nota final lançada e publicada
+    Regra:
+    - CONCLUIDO: processo tem nota final e nota publicada
     - EM_AVALIACAO: relatório submetido
     - EM_CURSO: processo formalizado e validado
     - PREPARACAO: caso contrário
@@ -20,10 +20,10 @@ def atualizar_estado_processo(processo):
     if processo.nota_final is not None and processo.nota_publicada:
         novo_estado = ProcessoEstagio.Estado.CONCLUIDO
 
-    elif hasattr(processo.candidatura, "relatorio"):
+    elif processo.tem_relatorio:
         novo_estado = ProcessoEstagio.Estado.EM_AVALIACAO
 
-    elif processo_pronto_para_iniciar(processo):
+    elif processo.pronto_para_iniciar:
         novo_estado = ProcessoEstagio.Estado.EM_CURSO
 
     else:
@@ -34,18 +34,3 @@ def atualizar_estado_processo(processo):
         processo.save(update_fields=["estado"])
 
     return processo
-
-
-def processo_pronto_para_iniciar(processo):
-    return all(
-        [
-            processo.candidatura.status == "ACEITE",
-            processo.orientador,
-            processo.supervisor_nome,
-            processo.local_estagio,
-            processo.data_inicio,
-            processo.data_fim,
-            processo.empresa_confirmada,
-            processo.validado_servicos_academicos,
-        ]
-    )

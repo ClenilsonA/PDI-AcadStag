@@ -66,14 +66,22 @@
                                 <span class="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
                                     Submetida
                                 </span>
+
+                            {% elif c.status == "ACEITE" and c.processo and not c.processo.validado_servicos_academicos %}
+                                <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+                                    A aguardar validação académica
+                                </span>
+
                             {% elif c.status == "ACEITE" %}
                                 <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
                                     Aceite
                                 </span>
+
                             {% elif c.status == "REJEITADA" %}
                                 <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
                                     Rejeitada
                                 </span>
+
                             {% else %}
                                 <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium {{ c.status|status_badge }}">
                                     {{ c.status }}

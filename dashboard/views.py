@@ -4,6 +4,7 @@ from django.shortcuts import render
 from core.decorators import role_required
 from avaliacoes.models import AvaliacaoEntidade, AvaliacaoOrientador
 from candidaturas.models import Candidatura
+from certificados.models import Certificado
 from estagios.models import Estagio
 from processos.models import ProcessoEstagio
 
@@ -116,6 +117,48 @@ def _build_orientador_context(user):
     }
 
 
+def _build_admin_context():
+    processos = (
+        ProcessoEstagio.objects.select_related(
+            "candidatura",
+            "candidatura__aluno",
+            "candidatura__estagio",
+            "candidatura__estagio__empresa",
+            "orientador",
+        )
+        .order_by("-criado_em")
+    )
+
+    processos_pendentes_validacao = processos.filter(
+        candidatura__status=Candidatura.Status.ACEITE,
+        validado_servicos_academicos=False,
+    )
+
+    return {
+        "kpis": {
+            "processos_total": processos.count(),
+            "processos_preparacao": processos.filter(
+                estado=ProcessoEstagio.Estado.PREPARACAO
+            ).count(),
+            "processos_em_curso": processos.filter(
+                estado=ProcessoEstagio.Estado.EM_CURSO
+            ).count(),
+            "processos_em_avaliacao": processos.filter(
+                estado=ProcessoEstagio.Estado.EM_AVALIACAO
+            ).count(),
+            "processos_concluidos": processos.filter(
+                estado=ProcessoEstagio.Estado.CONCLUIDO
+            ).count(),
+            "pendentes_validacao": processos_pendentes_validacao.count(),
+            "certificados_emitidos": Certificado.objects.count(),
+            "avaliacoes_praticas": AvaliacaoEntidade.objects.count(),
+            "avaliacoes_teoricas": AvaliacaoOrientador.objects.count(),
+        },
+        "ultimos_processos": processos[:5],
+        "processos_pendentes_validacao": processos_pendentes_validacao[:5],
+    }
+
+
 @login_required
 @role_required("ALUNO", "EMPRESA", "ORIENTADOR", "ADMIN", message="Acesso não autorizado.")
 def dashboard_view(request):
@@ -127,6 +170,8 @@ def dashboard_view(request):
         context = _build_empresa_context(user)
     elif user.role == "ORIENTADOR":
         context = _build_orientador_context(user)
+    elif user.role == "ADMIN":
+        context = _build_admin_context()
     else:
         context = {}
 

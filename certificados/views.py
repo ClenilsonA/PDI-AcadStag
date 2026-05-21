@@ -6,7 +6,6 @@ from core.decorators import role_required
 from processos.models import ProcessoEstagio
 
 from .forms import CertificadoForm
-from .models import Certificado
 
 
 @login_required
@@ -22,17 +21,10 @@ def emitir_certificado(request, processo_id):
         pk=processo_id,
     )
 
-    if processo.estado != ProcessoEstagio.Estado.CONCLUIDO:
+    if not processo.pode_emitir_certificado:
         messages.error(
             request,
-            "Só é possível emitir certificado depois do processo estar concluído.",
-        )
-        return redirect("processos:detalhe", pk=processo.pk)
-
-    if not processo.nota_publicada or processo.nota_final is None:
-        messages.error(
-            request,
-            "Só é possível emitir certificado depois da nota final estar lançada e publicada.",
+            "Só é possível emitir certificado depois do processo estar concluído e da nota final estar publicada.",
         )
         return redirect("processos:detalhe", pk=processo.pk)
 
@@ -74,11 +66,11 @@ def aluno_certificado(request, processo_id):
         candidatura__aluno=request.user,
     )
 
-    certificado = getattr(processo, "certificado", None)
-
-    if not certificado or not certificado.ativo:
+    if not processo.certificado_disponivel_para_aluno:
         messages.error(request, "O certificado ainda não está disponível.")
         return redirect("candidaturas:minhas")
+
+    certificado = processo.certificado
 
     context = {
         "processo": processo,

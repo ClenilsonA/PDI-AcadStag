@@ -6,6 +6,19 @@ from users.models import User
 from .models import ProcessoEstagio
 
 
+def validar_nota_0_20(nota):
+    if nota is None:
+        return nota
+
+    if nota < 0:
+        raise forms.ValidationError("A nota não pode ser negativa.")
+
+    if nota > 20:
+        raise forms.ValidationError("A nota não pode ser superior a 20.")
+
+    return nota
+
+
 class ProcessoAdminForm(BaseTailwindForm, forms.ModelForm):
     orientador = forms.ModelChoiceField(
         queryset=User.objects.filter(role="ORIENTADOR").order_by("username"),
@@ -23,6 +36,19 @@ class ProcessoAdminForm(BaseTailwindForm, forms.ModelForm):
             "nota_final",
             "nota_publicada",
         ]
+        widgets = {
+            "nota_final": forms.NumberInput(
+                attrs={
+                    "min": 0,
+                    "max": 20,
+                    "step": "0.01",
+                }
+            ),
+        }
+
+    def clean_nota_final(self):
+        nota = self.cleaned_data.get("nota_final")
+        return validar_nota_0_20(nota)
 
 
 class ProcessoEmpresaForm(forms.ModelForm):
@@ -48,7 +74,10 @@ class ProcessoEmpresaForm(forms.ModelForm):
         data_fim = cleaned_data.get("data_fim")
 
         if data_inicio and data_fim and data_fim < data_inicio:
-            self.add_error("data_fim", "A data de fim não pode ser anterior à data de início.")
+            self.add_error(
+                "data_fim",
+                "A data de fim não pode ser anterior à data de início.",
+            )
 
         return cleaned_data
 

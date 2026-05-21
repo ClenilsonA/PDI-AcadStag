@@ -1,6 +1,8 @@
 from django import forms
 
 from core.forms import BaseTailwindForm
+from core.validators import validate_pdf_file
+
 from .models import Candidatura
 
 
@@ -22,6 +24,14 @@ class CandidaturaForm(BaseTailwindForm, forms.ModelForm):
         self.fields["comprovativo_frequencia"].label = (
             "Comprovativo de frequência universitária (PDF)"
         )
+
+    def clean_cv(self):
+        cv = self.cleaned_data.get("cv")
+        return validate_pdf_file(cv)
+
+    def clean_comprovativo_frequencia(self):
+        comprovativo = self.cleaned_data.get("comprovativo_frequencia")
+        return validate_pdf_file(comprovativo)
 
 
 class AceitarCandidaturaForm(forms.Form):
