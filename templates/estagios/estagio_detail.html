@@ -20,9 +20,9 @@
         <span class="inline-flex items-center rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700 bg-white">
           {{ estagio.duracao_meses }} meses
         </span>
-
+        
         {% if estagio.ativo %}
-          <span class="inline-flex items-center rounded-full bg-green-100 text-green-700 px-3 py-1 text-sm">
+          <span class="inline-flex items-center rounded-full bg-green-  100 text-green-700 px-3 py-1 text-sm">
             Ativo
           </span>
         {% else %}
@@ -41,7 +41,7 @@
 
         {% if user.is_authenticated and user.role == "ALUNO" %}
           <a
-            class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition"
+            class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-7000 transition"
             href="{% url 'candidaturas:criar' estagio.id %}"
           >
             Candidatar-me

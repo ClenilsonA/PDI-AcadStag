@@ -278,7 +278,7 @@
                     {% elif user.role == "EMPRESA" %}
                         <a href="{% url 'perfis:perfil' %}" class="nav-link">Perfil</a>
                         <a href="{% url 'dashboard:home' %}" class="nav-link">Dashboard</a>
-                        <a href="{% url 'estagios:empresa_list' %}" class="nav-link">Meus Estágios</a>
+                        <a href="{% url 'estagios:empresa_list' %}" class="nav-link">Estágios</a>
                         <a href="{% url 'candidaturas:empresa_list' %}" class="nav-link">Candidaturas</a>
 
                     {% elif user.role == "ADMIN" %}

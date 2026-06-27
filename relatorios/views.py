@@ -15,22 +15,29 @@ from .models import Relatorio
 @role_required("ALUNO", message="Acesso restrito a alunos.")
 def aluno_relatorios(request):
     candidaturas = (
-        Candidatura.objects.filter(aluno=request.user, status=Candidatura.Status.ACEITE)
+        Candidatura.objects.filter(
+            aluno=request.user,
+            status=Candidatura.Status.ACEITE
+        )
         .select_related("estagio", "estagio__empresa", "processo")
         .order_by("-data_candidatura")
     )
 
-    context = {
-        "candidaturas": candidaturas,
-    }
-    return render(request, "relatorios/aluno_relatorios.html", context)
+    return render(request, "relatorios/aluno_relatorios.html", {
+        "candidaturas": candidaturas
+    })
 
 
 @login_required
 @role_required("ALUNO", message="Acesso restrito a alunos.")
 def upload_relatorio(request, candidatura_id):
+
     candidatura = get_object_or_404(
-        Candidatura.objects.select_related("estagio", "estagio__empresa", "processo"),
+        Candidatura.objects.select_related(
+            "estagio",
+            "estagio__empresa",
+            "processo"
+        ),
         id=candidatura_id,
         aluno=request.user,
         status=Candidatura.Status.ACEITE,
@@ -41,43 +48,49 @@ def upload_relatorio(request, candidatura_id):
     if not processo:
         messages.error(
             request,
-            "Ainda não existe processo de estágio associado a esta candidatura.",
+            "Ainda não existe processo de estágio associado."
         )
         return redirect("relatorios:aluno_list")
 
-    estados_permitidos = [
+    # Estados permitidos
+    if processo.estado not in [
         ProcessoEstagio.Estado.EM_CURSO,
         ProcessoEstagio.Estado.EM_AVALIACAO,
-    ]
-
-    if processo.estado not in estados_permitidos:
+    ]:
         messages.error(
             request,
-            "Só podes submeter o relatório quando o estágio estiver em curso.",
+            "Só podes submeter o relatório quando o estágio estiver em curso."
         )
         return redirect("relatorios:aluno_list")
 
-    relatorio, _ = Relatorio.objects.get_or_create(candidatura=candidatura)
+    # 🔥 IMPORTANTE: NÃO usar get_or_create aqui
+    relatorio = Relatorio.objects.filter(candidatura=candidatura).first()
 
     if request.method == "POST":
         form = RelatorioForm(request.POST, request.FILES, instance=relatorio)
 
         if form.is_valid():
             relatorio_guardado = form.save(commit=False)
-            relatorio_guardado.estado = "PENDENTE"
+
             relatorio_guardado.candidatura = candidatura
+            relatorio_guardado.estado = Relatorio.Estado.PENDENTE
+
+            # se já existir ficheiro antigo, opcional: apagar (boa prática)
+            if relatorio and relatorio.ficheiro and request.FILES.get("ficheiro"):
+                relatorio.ficheiro.delete(save=False)
+
             relatorio_guardado.save()
 
             atualizar_estado_processo(processo)
 
             messages.success(request, "Relatório submetido com sucesso!")
             return redirect("relatorios:aluno_list")
+
     else:
         form = RelatorioForm(instance=relatorio)
 
-    context = {
+    return render(request, "relatorios/upload.html", {
         "form": form,
         "candidatura": candidatura,
         "processo": processo,
-    }
-    return render(request, "relatorios/upload.html", context)
+    })  
