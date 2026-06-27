@@ -1,15 +1,21 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
-# Create your models here.
-
-from django.db import models
 from empresas.models import Empresa
+
 
 class Estagio(models.Model):
     titulo = models.CharField(max_length=200)
     descricao = models.TextField()
     area = models.CharField(max_length=100)
-    duracao_meses = models.IntegerField()
+
+    duracao_meses = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(12),
+        ]
+    )
+
     ativo = models.BooleanField(default=True)
     data_criacao = models.DateTimeField(auto_now_add=True)
 

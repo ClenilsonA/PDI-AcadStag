@@ -7,12 +7,37 @@ from .models import Estagio
 class EstagioForm(BaseTailwindForm):
     class Meta:
         model = Estagio
-        fields = ["titulo", "descricao", "area", "duracao_meses", "ativo"]
+        fields = [
+            "titulo",
+            "descricao",
+            "area",
+            "duracao_meses",
+            "ativo",
+        ]
+
+        labels = {
+            "titulo": "Título",
+            "descricao": "Descrição",
+            "area": "Área",
+            "duracao_meses": "Duração (meses)",
+            "ativo": "Ativo",
+        }
+
         widgets = {
             "titulo": forms.TextInput(),
-            "descricao": forms.Textarea(attrs={"rows": 4}),
+            "descricao": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                }
+            ),
             "area": forms.TextInput(),
-            "duracao_meses": forms.NumberInput(attrs={"min": 1}),
+            "duracao_meses": forms.NumberInput(
+                attrs={
+                    "min": 1,
+                    "max": 12,
+                    "step": 1,
+                }
+            ),
             "ativo": forms.CheckboxInput(),
         }
 
@@ -23,6 +48,13 @@ class EstagioForm(BaseTailwindForm):
             return duracao
 
         if duracao < 1:
-            raise forms.ValidationError("A duração deve ser de pelo menos 1 mês.")
+            raise forms.ValidationError(
+                "A duração deve ser de pelo menos 1 mês."
+            )
+
+        if duracao > 12:
+            raise forms.ValidationError(
+                "A duração máxima é de 12 meses."
+            )
 
         return duracao

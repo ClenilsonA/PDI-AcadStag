@@ -46,6 +46,14 @@ class ProcessoAdminForm(BaseTailwindForm, forms.ModelForm):
             ),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # O estado é apenas visualizado.
+        # É atualizado automaticamente pelo sistema.
+        self.fields["estado"].disabled = True
+        self.fields["estado"].widget.attrs["readonly"] = True
+
     def clean_nota_final(self):
         nota = self.cleaned_data.get("nota_final")
         return validar_nota_0_20(nota)
@@ -70,6 +78,7 @@ class ProcessoEmpresaForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+
         data_inicio = cleaned_data.get("data_inicio")
         data_fim = cleaned_data.get("data_fim")
 
@@ -84,14 +93,14 @@ class ProcessoEmpresaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields["estado"].widget.attrs["readonly"] = True
-        self.fields["estado"].disabled = True
-
         input_classes = (
             "w-full rounded-lg border border-gray-300 px-3 py-2 "
-            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            "focus:outline-none focus:ring-2 focus:ring-blue-500 "
+            "focus:border-blue-500"
         )
 
         for field in self.fields.values():
             existing_classes = field.widget.attrs.get("class", "")
-            field.widget.attrs["class"] = f"{input_classes} {existing_classes}".strip()
+            field.widget.attrs["class"] = (
+                f"{input_classes} {existing_classes}"
+            ).strip()
