@@ -1,8 +1,21 @@
+import os
+import uuid
+
 from django.core.validators import FileExtensionValidator
 from django.db import models
 
 from estagios.models import Estagio
 from users.models import User
+
+
+def upload_cv_path(instance, filename):
+    ext = os.path.splitext(filename)[1]
+    return os.path.join("candidaturas/cv", f"{uuid.uuid4().hex}{ext}")
+
+
+def upload_comprovativo_path(instance, filename):
+    ext = os.path.splitext(filename)[1]
+    return os.path.join("candidaturas/comprovativos", f"{uuid.uuid4().hex}{ext}")
 
 
 class Candidatura(models.Model):
@@ -25,14 +38,14 @@ class Candidatura(models.Model):
     )
 
     cv = models.FileField(
-        upload_to="candidaturas/cv/",
+        upload_to=upload_cv_path,
         validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
         null=True,
         blank=True,
     )
 
     comprovativo_frequencia = models.FileField(
-        upload_to="candidaturas/comprovativos/",
+        upload_to=upload_comprovativo_path,
         validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
         null=True,
         blank=True,

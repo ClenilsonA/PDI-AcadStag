@@ -1,7 +1,15 @@
+import os
+import uuid
+
 from django.conf import settings
 from django.db import models
 
 from processos.models import ProcessoEstagio
+
+
+def upload_certificado_path(instance, filename):
+    ext = os.path.splitext(filename)[1]
+    return os.path.join("certificados", f"{uuid.uuid4().hex}{ext}")
 
 
 class Certificado(models.Model):
@@ -14,7 +22,7 @@ class Certificado(models.Model):
     )
 
     ficheiro = models.FileField(
-        upload_to="certificados/",
+        upload_to=upload_certificado_path,
         null=True,
         blank=True,
     )
