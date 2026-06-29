@@ -1,131 +1,91 @@
 {% extends "base.html" %}
-
 {% block content %}
+<style>
+  .fx input:not([type=checkbox]):not([type=radio]):not([type=file]), .fx select, .fx textarea {
+    width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:.55rem .8rem;
+    font-size:.92rem; color:#0f172a; background:#fff; transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .fx textarea { min-height:120px; }
+  .fx input:focus, .fx select:focus, .fx textarea:focus { outline:none; border-color:#6d28d9; box-shadow:0 0 0 3px rgba(109,40,217,.15); }
+</style>
+
 <div class="max-w-4xl mx-auto py-8 space-y-6">
 
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-            <p class="text-sm text-gray-500 mb-1">Área do orientador</p>
-            <h1 class="text-3xl font-bold text-gray-900">Avaliação teórica do relatório</h1>
-            <p class="text-sm text-gray-600 mt-1">
-                Regista a avaliação académica do relatório final submetido pelo aluno.
-            </p>
-        </div>
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <p class="mb-1 text-sm text-slate-500">Área do orientador</p>
+      <h1 class="text-3xl font-bold tracking-tight text-slate-900">Avaliação teórica do relatório</h1>
+      <p class="mt-1 text-sm text-slate-600">Regista a avaliação académica do relatório final submetido pelo aluno.</p>
+    </div>
+    <a href="{% url 'processos:orientador_detalhe' processo.pk %}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">Voltar ao processo</a>
+  </div>
 
-        <a
-            href="{% url 'processos:orientador_detalhe' processo.pk %}"
-            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-        >
-            Voltar ao processo
-        </a>
+  <div class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div>
+      <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Processo de estágio</p>
+      <h2 class="text-xl font-semibold text-slate-900">{{ processo.candidatura.estagio.titulo }}</h2>
+      <p class="mt-1 text-sm text-slate-500">{{ processo.candidatura.estagio.empresa.nome }}</p>
     </div>
 
-    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-5">
-        <div>
-            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Processo de estágio</p>
-            <h2 class="text-xl font-semibold text-gray-900">
-                {{ processo.candidatura.estagio.titulo }}
-            </h2>
-            <p class="text-sm text-gray-500 mt-1">
-                {{ processo.candidatura.estagio.empresa.nome }}
-            </p>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-4">
-            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Aluno</p>
-                <p class="font-semibold text-gray-900">
-                    {{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}
-                </p>
-                {% if processo.candidatura.aluno.email %}
-                    <p class="text-sm text-gray-500">{{ processo.candidatura.aluno.email }}</p>
-                {% endif %}
-            </div>
-
-            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Empresa</p>
-                <p class="font-semibold text-gray-900">
-                    {{ processo.candidatura.estagio.empresa.nome }}
-                </p>
-            </div>
-
-            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Estado do processo</p>
-                <p class="font-semibold text-gray-900">
-                    {{ processo.get_estado_display }}
-                </p>
-            </div>
-        </div>
-
-        <div class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
-            <p class="text-sm text-blue-900">
-                <strong>Nota:</strong> esta avaliação é interna. Será consultada pelos Serviços Académicos para apoiar o lançamento da nota final e não é apresentada ao aluno.
-            </p>
-        </div>
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="rounded-xl border border-slate-100 bg-slate-50 p-4">
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Aluno</p>
+        <p class="font-semibold text-slate-900">{{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}</p>
+        {% if processo.candidatura.aluno.email %}<p class="text-sm text-slate-500">{{ processo.candidatura.aluno.email }}</p>{% endif %}
+      </div>
+      <div class="rounded-xl border border-slate-100 bg-slate-50 p-4">
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Empresa</p>
+        <p class="font-semibold text-slate-900">{{ processo.candidatura.estagio.empresa.nome }}</p>
+      </div>
+      <div class="rounded-xl border border-slate-100 bg-slate-50 p-4">
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Estado do processo</p>
+        <p class="font-semibold text-slate-900">{{ processo.get_estado_display }}</p>
+      </div>
     </div>
 
-    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-100">
-            <h2 class="text-xl font-semibold text-gray-900">Dados da avaliação teórica</h2>
-            <p class="text-sm text-gray-500 mt-1">
-                Avalia a componente académica do relatório final e deixa um comentário técnico.
-            </p>
-        </div>
-
-        <form method="post" class="p-6 space-y-6">
-            {% csrf_token %}
-
-            {% if form.non_field_errors %}
-                <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    {{ form.nota_teorica.label }} <span class="text-red-600">*</span>
-                </label>
-                {{ form.nota_teorica }}
-                {% if form.nota_teorica.errors %}
-                    <p class="text-sm text-red-600 mt-1">{{ form.nota_teorica.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    {{ form.comentario.label }}
-                </label>
-                {{ form.comentario }}
-                {% if form.comentario.errors %}
-                    <p class="text-sm text-red-600 mt-1">{{ form.comentario.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-            {% if avaliacao %}
-                <div class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
-                    <p class="text-sm text-gray-700">
-                        Esta avaliação já foi registada anteriormente. Ao guardar, os dados serão atualizados.
-                    </p>
-                </div>
-            {% endif %}
-
-            <div class="flex flex-wrap gap-3 pt-4">
-                <button
-                    type="submit"
-                    class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
-                >
-                    Guardar avaliação
-                </button>
-
-                <a
-                    href="{% url 'processos:orientador_detalhe' processo.pk %}"
-                    class="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300 transition"
-                >
-                    Cancelar
-                </a>
-            </div>
-        </form>
+    <div class="rounded-xl border border-violet-100 bg-violet-50 px-4 py-3">
+      <p class="text-sm text-violet-900"><strong>Nota:</strong> esta avaliação é interna. Será consultada pelos Serviços Académicos para apoiar o lançamento da nota final e não é apresentada ao aluno.</p>
     </div>
+  </div>
+
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div style="height:4px;background:linear-gradient(90deg,#2dd4bf,#6d28d9)"></div>
+    <div class="border-b border-slate-100 px-6 py-5">
+      <h2 class="text-xl font-semibold text-slate-900">Dados da avaliação teórica</h2>
+      <p class="mt-1 text-sm text-slate-500">Avalia a componente académica do relatório final e deixa um comentário técnico.</p>
+    </div>
+
+    <form method="post" class="fx space-y-6 p-6">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">{{ form.nota_teorica.label }} <span class="text-rose-600">*</span></label>
+        {{ form.nota_teorica }}
+        {% if form.nota_teorica.errors %}<p class="mt-1 text-sm text-rose-600">{{ form.nota_teorica.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">{{ form.comentario.label }}</label>
+        {{ form.comentario }}
+        {% if form.comentario.errors %}<p class="mt-1 text-sm text-rose-600">{{ form.comentario.errors.0 }}</p>{% endif %}
+      </div>
+
+      {% if avaliacao %}
+        <div class="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+          <p class="text-sm text-slate-700">Esta avaliação já foi registada anteriormente. Ao guardar, os dados serão atualizados.</p>
+        </div>
+      {% endif %}
+
+      <div class="flex flex-wrap gap-3 pt-4">
+        <button type="submit" style="background-image:linear-gradient(135deg,#2dd4bf,#6d28d9)" class="rounded-2xl px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-700/20 transition hover:-translate-y-0.5 hover:shadow-xl">Guardar avaliação</button>
+        <a href="{% url 'processos:orientador_detalhe' processo.pk %}" class="rounded-2xl border border-slate-200 px-6 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50">Cancelar</a>
+      </div>
+    </form>
+  </div>
 
 </div>
 {% endblock %}

@@ -1,182 +1,132 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="max-w-5xl mx-auto py-8 space-y-6">
 
-    <div>
-        <h1 class="text-2xl font-bold">Acompanhamento do estágio</h1>
-        <p class="text-gray-600 mt-1">
-            Consulta aqui o estado da tua candidatura e do teu processo de estágio.
-        </p>
+  <div>
+    <h1 class="text-3xl font-bold tracking-tight text-slate-900">Acompanhamento do estágio</h1>
+    <p class="mt-1 text-sm text-slate-600">Consulta aqui o estado da tua candidatura e do teu processo de estágio.</p>
+  </div>
+
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div style="height:4px;background:linear-gradient(90deg,#2dd4bf,#6d28d9)"></div>
+    <div class="space-y-4 p-6">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-semibold text-slate-900">{{ candidatura.estagio.titulo }}</h2>
+          <p class="text-sm text-slate-500">{{ candidatura.estagio.empresa.nome }}</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          {% if candidatura.status == "SUBMETIDA" %}
+            <span class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">Candidatura submetida</span>
+          {% elif candidatura.status == "ACEITE" %}
+            <span class="inline-flex items-center rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">Candidatura aceite</span>
+          {% elif candidatura.status == "REJEITADA" %}
+            <span class="inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-xs font-medium text-rose-800">Candidatura rejeitada</span>
+          {% endif %}
+          {% if processo %}
+            <span class="inline-flex items-center rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-800">Processo: {{ processo.get_estado_display }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="grid gap-4 pt-2 md:grid-cols-2">
+        <div>
+          <h3 class="text-sm font-semibold text-slate-700">Data da candidatura</h3>
+          <p class="text-slate-900">{{ candidatura.data_candidatura|date:"d/m/Y H:i" }}</p>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-slate-700">Data de publicação do estágio</h3>
+          <p class="text-slate-900">{{ candidatura.estagio.data_criacao|date:"d/m/Y H:i" }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if processo %}
+  <div class="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <h2 class="text-xl font-semibold text-slate-900">Detalhes do processo</h2>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700">Orientador académico</h3>
+        {% if processo.orientador %}
+          <p class="text-slate-900">{{ processo.orientador.get_full_name|default:processo.orientador.username }}</p>
+          {% if processo.orientador.email %}<p class="text-sm text-slate-500">{{ processo.orientador.email }}</p>{% endif %}
+        {% else %}
+          <p class="text-slate-400">Ainda não atribuído</p>
+        {% endif %}
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700">Supervisor da entidade</h3>
+        {% if processo.supervisor_nome %}
+          <p class="text-slate-900">{{ processo.supervisor_nome }}</p>
+          {% if processo.supervisor_email %}<p class="text-sm text-slate-500">{{ processo.supervisor_email }}</p>{% endif %}
+          {% if processo.supervisor_telefone %}<p class="text-sm text-slate-500">{{ processo.supervisor_telefone }}</p>{% endif %}
+        {% else %}
+          <p class="text-slate-400">Ainda não definido</p>
+        {% endif %}
+      </div>
     </div>
 
-    <div class="bg-white shadow rounded-lg p-6 space-y-4">
-        <div class="flex justify-between items-start gap-4 flex-wrap">
-            <div>
-                <h2 class="text-lg font-semibold">{{ candidatura.estagio.titulo }}</h2>
-                <p class="text-sm text-gray-600">{{ candidatura.estagio.empresa.nome }}</p>
-            </div>
-
-            <div class="flex gap-2 flex-wrap">
-                {% if candidatura.status == "SUBMETIDA" %}
-                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-800">
-                        Candidatura submetida
-                    </span>
-                {% elif candidatura.status == "ACEITE" %}
-                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-green-100 text-green-800">
-                        Candidatura aceite
-                    </span>
-                {% elif candidatura.status == "REJEITADA" %}
-                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-red-100 text-red-800">
-                        Candidatura rejeitada
-                    </span>
-                {% endif %}
-
-                {% if processo %}
-                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800">
-                        Processo: {{ processo.get_estado_display }}
-                    </span>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-4 pt-2">
-            <div>
-                <h3 class="text-sm font-semibold text-gray-700">Data da candidatura</h3>
-                <p class="text-gray-900">{{ candidatura.data_candidatura|date:"d/m/Y H:i" }}</p>
-            </div>
-
-            <div>
-                <h3 class="text-sm font-semibold text-gray-700">Data de publicação do estágio</h3>
-                <p class="text-gray-900">{{ candidatura.estagio.data_criacao|date:"d/m/Y H:i" }}</p>
-            </div>
-        </div>
+    <div class="grid gap-6 md:grid-cols-3">
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700">Local do estágio</h3>
+        <p class="text-slate-900">{{ processo.local_estagio|default:"Ainda não definido" }}</p>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700">Data de início</h3>
+        <p class="text-slate-900">{% if processo.data_inicio %}{{ processo.data_inicio|date:"d/m/Y" }}{% else %}Ainda não definida{% endif %}</p>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700">Data de fim</h3>
+        <p class="text-slate-900">{% if processo.data_fim %}{{ processo.data_fim|date:"d/m/Y" }}{% else %}Ainda não definida{% endif %}</p>
+      </div>
     </div>
 
-    {% if processo %}
-    <div class="bg-white shadow rounded-lg p-6 space-y-6">
-        <h2 class="text-xl font-semibold">Detalhes do processo</h2>
-
-        <div class="grid md:grid-cols-2 gap-6">
-            <div>
-                <h3 class="text-sm font-semibold text-gray-700">Orientador académico</h3>
-                {% if processo.orientador %}
-                    <p class="text-gray-900">
-                        {{ processo.orientador.get_full_name|default:processo.orientador.username }}
-                    </p>
-                    {% if processo.orientador.email %}
-                        <p class="text-sm text-gray-600">{{ processo.orientador.email }}</p>
-                    {% endif %}
-                {% else %}
-                    <p class="text-gray-400">Ainda não atribuído</p>
-                {% endif %}
-            </div>
-
-            <div>
-                <h3 class="text-sm font-semibold text-gray-700">Supervisor da entidade</h3>
-                {% if processo.supervisor_nome %}
-                    <p class="text-gray-900">{{ processo.supervisor_nome }}</p>
-                    {% if processo.supervisor_email %}
-                        <p class="text-sm text-gray-600">{{ processo.supervisor_email }}</p>
-                    {% endif %}
-                    {% if processo.supervisor_telefone %}
-                        <p class="text-sm text-gray-600">{{ processo.supervisor_telefone }}</p>
-                    {% endif %}
-                {% else %}
-                    <p class="text-gray-400">Ainda não definido</p>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-6">
-            <div>
-                <h3 class="text-sm font-semibold text-gray-700">Local do estágio</h3>
-                <p class="text-gray-900">{{ processo.local_estagio|default:"Ainda não definido" }}</p>
-            </div>
-
-            <div>
-                <h3 class="text-sm font-semibold text-gray-700">Data de início</h3>
-                <p class="text-gray-900">
-                    {% if processo.data_inicio %}
-                        {{ processo.data_inicio|date:"d/m/Y" }}
-                    {% else %}
-                        Ainda não definida
-                    {% endif %}
-                </p>
-            </div>
-
-            <div>
-                <h3 class="text-sm font-semibold text-gray-700">Data de fim</h3>
-                <p class="text-gray-900">
-                    {% if processo.data_fim %}
-                        {{ processo.data_fim|date:"d/m/Y" }}
-                    {% else %}
-                        Ainda não definida
-                    {% endif %}
-                </p>
-            </div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-6">
-            <div>
-                <h3 class="text-sm font-semibold text-gray-700">Empresa confirmada</h3>
-                <p class="text-gray-900">
-                    {% if processo.empresa_confirmada %}Sim{% else %}Não{% endif %}
-                </p>
-            </div>
-
-            <div>
-                <h3 class="text-sm font-semibold text-gray-700">Validação dos serviços académicos</h3>
-                <p class="text-gray-900">
-                    {% if processo.validado_servicos_academicos %}Sim{% else %}Não{% endif %}
-                </p>
-            </div>
-        </div>
+    <div class="grid gap-6 md:grid-cols-2">
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700">Empresa confirmada</h3>
+        <p class="text-slate-900">{% if processo.empresa_confirmada %}Sim{% else %}Não{% endif %}</p>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700">Validação dos serviços académicos</h3>
+        <p class="text-slate-900">{% if processo.validado_servicos_academicos %}Sim{% else %}Não{% endif %}</p>
+      </div>
     </div>
-    {% endif %}
+  </div>
+  {% endif %}
 
-    <div class="bg-white shadow rounded-lg p-6 space-y-4">
-        <h2 class="text-xl font-semibold">Relatório e nota final</h2>
+  <div class="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <h2 class="text-xl font-semibold text-slate-900">Relatório e nota final</h2>
 
-        <div class="grid md:grid-cols-3 gap-6">
-            <div>
-                <h3 class="text-sm font-semibold text-gray-700">Relatório final</h3>
-                {% if relatorio %}
-                    <p class="text-green-700 font-medium">Submetido</p>
-                    {% if relatorio.ficheiro %}
-                        <a href="{{ relatorio.ficheiro.url }}" target="_blank" class="text-blue-600 hover:underline text-sm">
-                            Ver relatório
-                        </a>
-                    {% endif %}
-                {% else %}
-                    <p class="text-gray-400">Ainda não submetido</p>
-                {% endif %}
-            </div>
-
-            <div>
-                <h3 class="text-sm font-semibold text-gray-700">Nota final</h3>
-                {% if processo and processo.nota_publicada and processo.nota_final %}
-                    <p class="text-gray-900 font-semibold">{{ processo.nota_final }}</p>
-                {% else %}
-                    <p class="text-gray-400">Ainda não publicada</p>
-                {% endif %}
-            </div>
-
-            <div>
-                <h3 class="text-sm font-semibold text-gray-700">Certificado</h3>
-                {% if processo and processo.certificado and processo.certificado.ativo %}
-                    <a
-                        href="{% url 'certificados:aluno_detalhe' processo.pk %}"
-                        class="text-blue-600 hover:underline text-sm font-medium"
-                    >
-                        Ver certificado
-                    </a>
-                {% else %}
-                    <p class="text-gray-400">Ainda não disponível</p>
-                {% endif %}
-            </div>
-        </div>
+    <div class="grid gap-6 md:grid-cols-3">
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700">Relatório final</h3>
+        {% if relatorio %}
+          <p class="font-medium text-teal-700">Submetido</p>
+          {% if relatorio.ficheiro %}<a href="{{ relatorio.ficheiro.url }}" target="_blank" class="text-sm font-medium text-violet-700 hover:underline">Ver relatório</a>{% endif %}
+        {% else %}
+          <p class="text-slate-400">Ainda não submetido</p>
+        {% endif %}
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700">Nota final</h3>
+        {% if processo and processo.nota_publicada and processo.nota_final %}
+          <p class="text-2xl font-bold text-slate-900">{{ processo.nota_final }}</p>
+        {% else %}
+          <p class="text-slate-400">Ainda não publicada</p>
+        {% endif %}
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700">Certificado</h3>
+        {% if processo and processo.certificado and processo.certificado.ativo %}
+          <a href="{% url 'certificados:aluno_detalhe' processo.pk %}" class="text-sm font-medium text-violet-700 hover:underline">Ver certificado</a>
+        {% else %}
+          <p class="text-slate-400">Ainda não disponível</p>
+        {% endif %}
+      </div>
     </div>
+  </div>
 
 </div>
 {% endblock %}

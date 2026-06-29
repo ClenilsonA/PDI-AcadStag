@@ -3,93 +3,74 @@
 
 {% block content %}
 
-<div class="w-full mx-auto py-5 px-4">
+<div class="w-full mx-auto py-5">
 
-  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-5">
+  {# ── Cabeçalho ─────────────────────────────────────────── #}
+  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-6">
     <div>
-      <h2 class="text-2xl font-bold tracking-tight text-gray-900">Dashboard</h2>
-      <p class="text-sm text-gray-500 mt-1">
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+      <p class="mt-1 text-sm text-slate-500">
         Bem-vindo, {{ request.user.first_name|default:request.user.username }}.
       </p>
     </div>
-
-    <div class="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm">
-      {{ request.user.role }}
-    </div>
+    <span class="role-chip">{{ request.user.role }}</span>
   </div>
 
   {% if user.role == "ALUNO" %}
 
     <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-5">
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Submetidas</p>
-        <p class="text-2xl font-bold text-yellow-600">{{ kpis.submetidas }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-amber-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Submetidas</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.submetidas }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Aceites</p>
-        <p class="text-2xl font-bold text-green-600">{{ kpis.aceites }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-teal-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Aceites</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.aceites }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Rejeitadas</p>
-        <p class="text-2xl font-bold text-red-600">{{ kpis.rejeitadas }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-rose-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Rejeitadas</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.rejeitadas }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Processos</p>
-        <p class="text-2xl font-bold text-blue-600">{{ kpis.processos }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-violet-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Processos</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.processos }}</p>
       </div>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-3">
-      <div class="xl:col-span-2 bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-semibold text-gray-900">Últimas candidaturas</h3>
-          <a href="{% url 'candidaturas:minhas' %}" class="text-sm text-blue-600 hover:underline">
-            Ver todas
-          </a>
+      <div class="xl:col-span-2 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-slate-900">Últimas candidaturas</h3>
+          <a href="{% url 'candidaturas:minhas' %}" class="text-sm font-semibold text-violet-700 hover:underline">Ver todas</a>
         </div>
-
-        <div class="space-y-3">
+        <div class="space-y-2.5">
           {% for c in ultimas_candidaturas %}
-            <div class="flex items-center justify-between gap-3 rounded-xl border border-gray-100 px-3 py-3">
+            <div class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-3 py-3">
               <div class="min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate">{{ c.estagio.titulo }}</p>
-                <p class="text-xs text-gray-500 truncate">{{ c.estagio.empresa.nome }}</p>
+                <p class="truncate text-sm font-medium text-slate-900">{{ c.estagio.titulo }}</p>
+                <p class="truncate text-xs text-slate-500">{{ c.estagio.empresa.nome }}</p>
               </div>
-
-              <span class="shrink-0 px-2 py-1 rounded text-xs font-semibold {{ c.status|status_badge }}">
-                {{ c.status }}
-              </span>
+              <span class="shrink-0 rounded px-2 py-1 text-xs font-semibold {{ c.status|status_badge }}">{{ c.status }}</span>
             </div>
           {% empty %}
-            <div class="rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-              Sem candidaturas.
-            </div>
+            <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">Sem candidaturas.</div>
           {% endfor %}
         </div>
       </div>
 
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-semibold text-gray-900">Estágios recentes</h3>
-          <a href="{% url 'estagios:list' %}" class="text-sm text-blue-600 hover:underline">
-            Ver mais
-          </a>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-slate-900">Estágios recentes</h3>
+          <a href="{% url 'estagios:list' %}" class="text-sm font-semibold text-violet-700 hover:underline">Ver mais</a>
         </div>
-
-        <div class="space-y-3">
+        <div class="space-y-2.5">
           {% for e in estagios_recentes %}
-            <a
-              href="{% url 'estagios:detail' e.id %}"
-              class="block rounded-xl border border-gray-100 px-3 py-3 hover:bg-gray-50 transition"
-            >
-              <p class="text-sm font-medium text-gray-900 truncate">{{ e.titulo }}</p>
-              <p class="text-xs text-gray-500 truncate">{{ e.area }}</p>
+            <a href="{% url 'estagios:detail' e.id %}" class="block rounded-xl border border-slate-100 px-3 py-3 transition hover:bg-slate-50 hover:border-violet-200">
+              <p class="truncate text-sm font-medium text-slate-900">{{ e.titulo }}</p>
+              <p class="truncate text-xs text-slate-500">{{ e.area }}</p>
             </a>
           {% empty %}
-            <div class="text-sm text-gray-500">Sem estágios disponíveis.</div>
+            <div class="text-sm text-slate-500">Sem estágios disponíveis.</div>
           {% endfor %}
         </div>
       </div>
@@ -98,81 +79,62 @@
   {% elif user.role == "EMPRESA" %}
 
     <div class="grid grid-cols-2 xl:grid-cols-5 gap-3 mb-5">
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Estágios ativos</p>
-        <p class="text-2xl font-bold text-blue-600">{{ kpis.estagios_ativos }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-teal-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Estágios ativos</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.estagios_ativos }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Cand. submetidas</p>
-        <p class="text-2xl font-bold text-yellow-600">{{ kpis.candidaturas_submetidas }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-amber-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Cand. submetidas</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.candidaturas_submetidas }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Total candidaturas</p>
-        <p class="text-2xl font-bold text-indigo-600">{{ kpis.candidaturas_total }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-violet-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Total candidaturas</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.candidaturas_total }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Processos</p>
-        <p class="text-2xl font-bold text-green-600">{{ kpis.processos }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-teal-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Processos</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.processos }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Avaliações práticas</p>
-        <p class="text-2xl font-bold text-purple-600">{{ kpis.avaliacoes_praticas }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-violet-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Avaliações práticas</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.avaliacoes_praticas }}</p>
       </div>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-3">
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-semibold text-gray-900">Últimas candidaturas</h3>
-          <a href="{% url 'candidaturas:empresa_list' %}" class="text-sm text-blue-600 hover:underline">
-            Ver todas
-          </a>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-slate-900">Últimas candidaturas</h3>
+          <a href="{% url 'candidaturas:empresa_list' %}" class="text-sm font-semibold text-violet-700 hover:underline">Ver todas</a>
         </div>
-
-        <div class="space-y-3">
+        <div class="space-y-2.5">
           {% for c in ultimas_candidaturas %}
-            <div class="flex items-center justify-between gap-3 rounded-xl border border-gray-100 px-3 py-3">
+            <div class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-3 py-3">
               <div class="min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate">
-                  {{ c.aluno.username }} → {{ c.estagio.titulo }}
-                </p>
-                <p class="text-xs text-gray-500 truncate">{{ c.data_candidatura|date:"d/m/Y H:i" }}</p>
+                <p class="truncate text-sm font-medium text-slate-900">{{ c.aluno.username }} → {{ c.estagio.titulo }}</p>
+                <p class="truncate text-xs text-slate-500">{{ c.data_candidatura|date:"d/m/Y H:i" }}</p>
               </div>
-
-              <span class="shrink-0 px-2 py-1 rounded text-xs font-semibold {{ c.status|status_badge }}">
-                {{ c.status }}
-              </span>
+              <span class="shrink-0 rounded px-2 py-1 text-xs font-semibold {{ c.status|status_badge }}">{{ c.status }}</span>
             </div>
           {% empty %}
-            <div class="rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-              Sem candidaturas.
-            </div>
+            <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">Sem candidaturas.</div>
           {% endfor %}
         </div>
       </div>
 
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-semibold text-gray-900">Meus estágios</h3>
-          <a href="{% url 'estagios:empresa_list' %}" class="text-sm text-blue-600 hover:underline">
-            Ver todos
-          </a>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-slate-900">Meus estágios</h3>
+          <a href="{% url 'estagios:empresa_list' %}" class="text-sm font-semibold text-violet-700 hover:underline">Ver todos</a>
         </div>
-
-        <div class="space-y-3">
+        <div class="space-y-2.5">
           {% for e in meus_estagios %}
-            <div class="rounded-xl border border-gray-100 px-3 py-3">
-              <p class="text-sm font-medium text-gray-900 truncate">{{ e.titulo }}</p>
-              <p class="text-xs text-gray-500 truncate">{{ e.area }}</p>
+            <div class="rounded-xl border border-slate-100 px-3 py-3">
+              <p class="truncate text-sm font-medium text-slate-900">{{ e.titulo }}</p>
+              <p class="truncate text-xs text-slate-500">{{ e.area }}</p>
             </div>
           {% empty %}
-            <div class="rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-              Sem estágios registados.
-            </div>
+            <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">Sem estágios registados.</div>
           {% endfor %}
         </div>
       </div>
@@ -181,77 +143,53 @@
   {% elif user.role == "ORIENTADOR" %}
 
     <div class="grid grid-cols-3 gap-3 mb-5">
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Processos atribuídos</p>
-        <p class="text-2xl font-bold text-blue-600">{{ kpis.processos_atribuidos }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-violet-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Processos atribuídos</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.processos_atribuidos }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Avaliações pendentes</p>
-        <p class="text-2xl font-bold text-yellow-600">{{ kpis.avaliacoes_pendentes }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-amber-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Avaliações pendentes</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.avaliacoes_pendentes }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Avaliações feitas</p>
-        <p class="text-2xl font-bold text-green-600">{{ kpis.avaliacoes_feitas }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-teal-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Avaliações feitas</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.avaliacoes_feitas }}</p>
       </div>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-3">
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-semibold text-gray-900">Processos atribuídos</h3>
-          <a href="{% url 'processos:orientador_lista' %}" class="text-sm text-blue-600 hover:underline">
-            Ver todos
-          </a>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-slate-900">Processos atribuídos</h3>
+          <a href="{% url 'processos:orientador_lista' %}" class="text-sm font-semibold text-violet-700 hover:underline">Ver todos</a>
         </div>
-
-        <div class="space-y-3">
+        <div class="space-y-2.5">
           {% for processo in processos_atribuidos_lista %}
-            <a
-              href="{% url 'processos:orientador_detalhe' processo.pk %}"
-              class="block rounded-xl border border-gray-100 px-3 py-3 hover:bg-gray-50 transition"
-            >
-              <p class="text-sm font-medium text-gray-900 truncate">
-                {{ processo.candidatura.aluno.username }}
-              </p>
-              <p class="text-xs text-gray-500 truncate">
-                {{ processo.candidatura.estagio.titulo }}
-              </p>
+            <a href="{% url 'processos:orientador_detalhe' processo.pk %}" class="block rounded-xl border border-slate-100 px-3 py-3 transition hover:bg-slate-50 hover:border-violet-200">
+              <p class="truncate text-sm font-medium text-slate-900">{{ processo.candidatura.aluno.username }}</p>
+              <p class="truncate text-xs text-slate-500">{{ processo.candidatura.estagio.titulo }}</p>
             </a>
           {% empty %}
-            <div class="rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-              Sem processos atribuídos.
-            </div>
+            <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">Sem processos atribuídos.</div>
           {% endfor %}
         </div>
       </div>
 
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-semibold text-gray-900">Últimas avaliações teóricas</h3>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-slate-900">Últimas avaliações teóricas</h3>
         </div>
-
-        <div class="space-y-3">
+        <div class="space-y-2.5">
           {% for a in ultimas_avaliacoes %}
-            <div class="flex items-center justify-between gap-3 rounded-xl border border-gray-100 px-3 py-3">
+            <div class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-3 py-3">
               <div class="min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate">
-                  {{ a.processo.candidatura.aluno.username }}
-                </p>
-                <p class="text-xs text-gray-500 truncate">
-                  {{ a.processo.candidatura.estagio.titulo }}
-                </p>
+                <p class="truncate text-sm font-medium text-slate-900">{{ a.processo.candidatura.aluno.username }}</p>
+                <p class="truncate text-xs text-slate-500">{{ a.processo.candidatura.estagio.titulo }}</p>
               </div>
-
-              <div class="shrink-0 text-sm font-semibold text-gray-900">
-                {{ a.nota_teorica }}
-              </div>
+              <div class="shrink-0 text-sm font-bold text-violet-700">{{ a.nota_teorica }}</div>
             </div>
           {% empty %}
-            <div class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
-              Sem avaliações teóricas.
-            </div>
+            <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">Sem avaliações teóricas.</div>
           {% endfor %}
         </div>
       </div>
@@ -259,126 +197,89 @@
 
   {% elif user.role == "ADMIN" %}
 
-    <div class="grid grid-cols-2 xl:grid-cols-5 gap-3 mb-5">
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Total processos</p>
-        <p class="text-2xl font-bold text-blue-600">{{ kpis.processos_total }}</p>
+    <div class="grid grid-cols-2 xl:grid-cols-5 gap-3 mb-3">
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-violet-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Total processos</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.processos_total }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Preparação</p>
-        <p class="text-2xl font-bold text-yellow-600">{{ kpis.processos_preparacao }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-amber-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Preparação</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.processos_preparacao }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Em curso</p>
-        <p class="text-2xl font-bold text-green-600">{{ kpis.processos_em_curso }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-teal-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Em curso</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.processos_em_curso }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Em avaliação</p>
-        <p class="text-2xl font-bold text-purple-600">{{ kpis.processos_em_avaliacao }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-violet-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Em avaliação</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.processos_em_avaliacao }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Concluídos</p>
-        <p class="text-2xl font-bold text-gray-900">{{ kpis.processos_concluidos }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-slate-400"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Concluídos</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.processos_concluidos }}</p>
       </div>
     </div>
 
     <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-5">
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Pendentes validação</p>
-        <p class="text-2xl font-bold text-orange-600">{{ kpis.pendentes_validacao }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-amber-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Pendentes validação</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.pendentes_validacao }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Certificados emitidos</p>
-        <p class="text-2xl font-bold text-emerald-600">{{ kpis.certificados_emitidos }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-teal-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Certificados emitidos</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.certificados_emitidos }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Avaliações práticas</p>
-        <p class="text-2xl font-bold text-indigo-600">{{ kpis.avaliacoes_praticas }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-violet-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Avaliações práticas</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.avaliacoes_praticas }}</p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Avaliações teóricas</p>
-        <p class="text-2xl font-bold text-pink-600">{{ kpis.avaliacoes_teoricas }}</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-violet-500"></span><p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Avaliações teóricas</p></div>
+        <p class="mt-2 text-3xl font-bold text-slate-900">{{ kpis.avaliacoes_teoricas }}</p>
       </div>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-3">
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-semibold text-gray-900">Processos pendentes de validação</h3>
-          <a href="{% url 'processos:list' %}" class="text-sm text-blue-600 hover:underline">
-            Ver processos
-          </a>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-slate-900">Processos pendentes de validação</h3>
+          <a href="{% url 'processos:list' %}" class="text-sm font-semibold text-violet-700 hover:underline">Ver processos</a>
         </div>
-
-        <div class="space-y-3">
+        <div class="space-y-2.5">
           {% for processo in processos_pendentes_validacao %}
-            <a
-              href="{% url 'processos:detalhe' processo.pk %}"
-              class="block rounded-xl border border-gray-100 px-3 py-3 hover:bg-gray-50 transition"
-            >
+            <a href="{% url 'processos:detalhe' processo.pk %}" class="block rounded-xl border border-slate-100 px-3 py-3 transition hover:bg-slate-50 hover:border-violet-200">
               <div class="flex items-center justify-between gap-3">
                 <div class="min-w-0">
-                  <p class="text-sm font-medium text-gray-900 truncate">
-                    {{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}
-                  </p>
-                  <p class="text-xs text-gray-500 truncate">
-                    {{ processo.candidatura.estagio.titulo }} · {{ processo.candidatura.estagio.empresa.nome }}
-                  </p>
+                  <p class="truncate text-sm font-medium text-slate-900">{{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}</p>
+                  <p class="truncate text-xs text-slate-500">{{ processo.candidatura.estagio.titulo }} · {{ processo.candidatura.estagio.empresa.nome }}</p>
                 </div>
-
-                <span class="shrink-0 rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
-                  Por validar
-                </span>
+                <span class="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">Por validar</span>
               </div>
             </a>
           {% empty %}
-            <div class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
-              Não existem processos pendentes de validação.
-            </div>
+            <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">Não existem processos pendentes de validação.</div>
           {% endfor %}
         </div>
       </div>
 
-      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-semibold text-gray-900">Últimos processos</h3>
-          <a href="{% url 'processos:list' %}" class="text-sm text-blue-600 hover:underline">
-            Ver todos
-          </a>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-slate-900">Últimos processos</h3>
+          <a href="{% url 'processos:list' %}" class="text-sm font-semibold text-violet-700 hover:underline">Ver todos</a>
         </div>
-
-        <div class="space-y-3">
+        <div class="space-y-2.5">
           {% for processo in ultimos_processos %}
-            <a
-              href="{% url 'processos:detalhe' processo.pk %}"
-              class="block rounded-xl border border-gray-100 px-3 py-3 hover:bg-gray-50 transition"
-            >
+            <a href="{% url 'processos:detalhe' processo.pk %}" class="block rounded-xl border border-slate-100 px-3 py-3 transition hover:bg-slate-50 hover:border-violet-200">
               <div class="flex items-center justify-between gap-3">
                 <div class="min-w-0">
-                  <p class="text-sm font-medium text-gray-900 truncate">
-                    {{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}
-                  </p>
-                  <p class="text-xs text-gray-500 truncate">
-                    {{ processo.candidatura.estagio.titulo }} · {{ processo.candidatura.estagio.empresa.nome }}
-                  </p>
+                  <p class="truncate text-sm font-medium text-slate-900">{{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}</p>
+                  <p class="truncate text-xs text-slate-500">{{ processo.candidatura.estagio.titulo }} · {{ processo.candidatura.estagio.empresa.nome }}</p>
                 </div>
-
-                <span class="shrink-0 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
-                  {{ processo.get_estado_display }}
-                </span>
+                <span class="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{{ processo.get_estado_display }}</span>
               </div>
             </a>
           {% empty %}
-            <div class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
-              Ainda não existem processos registados.
-            </div>
+            <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">Ainda não existem processos registados.</div>
           {% endfor %}
         </div>
       </div>
@@ -386,8 +287,8 @@
 
   {% else %}
 
-    <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-5">
-      <p class="text-sm text-gray-500">Sem dados disponíveis para este perfil.</p>
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm text-slate-500">Sem dados disponíveis para este perfil.</p>
     </div>
 
   {% endif %}

@@ -4,118 +4,79 @@
 {% block content %}
 <div class="max-w-7xl mx-auto py-8 space-y-6">
 
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-            <p class="text-sm text-gray-500 mb-1">Área do aluno</p>
-            <h1 class="text-3xl font-bold text-gray-900">Minhas candidaturas</h1>
-            <p class="text-sm text-gray-600 mt-1">
-                Consulta o estado das tuas candidaturas e acompanha o progresso dos teus estágios.
-            </p>
-        </div>
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <p class="mb-1 text-sm text-slate-500">Área do aluno</p>
+      <h1 class="text-3xl font-bold tracking-tight text-slate-900">Minhas candidaturas</h1>
+      <p class="mt-1 text-sm text-slate-600">Consulta o estado das tuas candidaturas e acompanha o progresso dos teus estágios.</p>
+    </div>
+    <div class="inline-flex items-center rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700 shadow-sm">
+      {{ candidaturas|length }} candidatura{% if candidaturas|length != 1 %}s{% endif %}
+    </div>
+  </div>
 
-        <div class="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm">
-            {{ candidaturas|length }} candidatura{% if candidaturas|length != 1 %}s{% endif %}
-        </div>
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div style="height:4px;background:linear-gradient(90deg,#2dd4bf,#6d28d9)"></div>
+    <div class="border-b border-slate-100 px-6 py-5">
+      <h2 class="text-lg font-semibold text-slate-900">Lista de candidaturas</h2>
+      <p class="mt-1 text-sm text-slate-500">Abre o acompanhamento para veres orientador, supervisor, datas, relatório, nota final e certificado.</p>
     </div>
 
-    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-100">
-            <h2 class="text-lg font-semibold text-gray-900">Lista de candidaturas</h2>
-            <p class="text-sm text-gray-500 mt-1">
-                Abre o acompanhamento para veres orientador, supervisor, datas, relatório, nota final e certificado.
-            </p>
-        </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-slate-50 text-slate-500">
+          <tr>
+            <th class="px-6 py-3 text-left font-semibold">Estágio</th>
+            <th class="px-6 py-3 text-left font-semibold">Empresa</th>
+            <th class="px-6 py-3 text-left font-semibold">Estado</th>
+            <th class="px-6 py-3 text-left font-semibold">Data</th>
+            <th class="px-6 py-3 text-right font-semibold">Ações</th>
+          </tr>
+        </thead>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-sm">
-                <thead class="bg-gray-50 text-gray-600">
-                    <tr>
-                        <th class="text-left px-6 py-3 font-semibold">Estágio</th>
-                        <th class="text-left px-6 py-3 font-semibold">Empresa</th>
-                        <th class="text-left px-6 py-3 font-semibold">Estado</th>
-                        <th class="text-left px-6 py-3 font-semibold">Data</th>
-                        <th class="text-right px-6 py-3 font-semibold">Ações</th>
-                    </tr>
-                </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for c in candidaturas %}
+          <tr class="transition hover:bg-slate-50">
+            <td class="px-6 py-4">
+              <a href="{% url 'estagios:detail' c.estagio.id %}" class="font-semibold text-slate-900 transition hover:text-violet-700">{{ c.estagio.titulo }}</a>
+              <div class="mt-1 text-xs text-slate-500">
+                {{ c.estagio.area|default:"Área não definida" }}{% if c.estagio.duracao_meses %} · {{ c.estagio.duracao_meses }} meses{% endif %}
+              </div>
+            </td>
 
-                <tbody class="divide-y divide-gray-100">
-                    {% for c in candidaturas %}
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4">
-                            <a
-                                href="{% url 'estagios:detail' c.estagio.id %}"
-                                class="font-semibold text-gray-900 hover:text-blue-600 transition"
-                            >
-                                {{ c.estagio.titulo }}
-                            </a>
+            <td class="px-6 py-4 text-slate-700">{{ c.estagio.empresa.nome }}</td>
 
-                            <div class="text-xs text-gray-500 mt-1">
-                                {{ c.estagio.area|default:"Área não definida" }}
-                                {% if c.estagio.duracao_meses %}
-                                    · {{ c.estagio.duracao_meses }} meses
-                                {% endif %}
-                            </div>
-                        </td>
+            <td class="px-6 py-4">
+              {% if c.status == "SUBMETIDA" %}
+                <span class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">Submetida</span>
+              {% elif c.status == "ACEITE" and c.processo and not c.processo.validado_servicos_academicos %}
+                <span class="inline-flex items-center rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-800">A aguardar validação académica</span>
+              {% elif c.status == "ACEITE" %}
+                <span class="inline-flex items-center rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">Aceite</span>
+              {% elif c.status == "REJEITADA" %}
+                <span class="inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-xs font-medium text-rose-800">Rejeitada</span>
+              {% else %}
+                <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium {{ c.status|status_badge }}">{{ c.status }}</span>
+              {% endif %}
+            </td>
 
-                        <td class="px-6 py-4 text-gray-700">
-                            {{ c.estagio.empresa.nome }}
-                        </td>
+            <td class="px-6 py-4 text-slate-500">{{ c.data_candidatura|date:"d/m/Y H:i" }}</td>
 
-                        <td class="px-6 py-4">
-                            {% if c.status == "SUBMETIDA" %}
-                                <span class="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
-                                    Submetida
-                                </span>
-
-                            {% elif c.status == "ACEITE" and c.processo and not c.processo.validado_servicos_academicos %}
-                                <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
-                                    A aguardar validação académica
-                                </span>
-
-                            {% elif c.status == "ACEITE" %}
-                                <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                                    Aceite
-                                </span>
-
-                            {% elif c.status == "REJEITADA" %}
-                                <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
-                                    Rejeitada
-                                </span>
-
-                            {% else %}
-                                <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium {{ c.status|status_badge }}">
-                                    {{ c.status }}
-                                </span>
-                            {% endif %}
-                        </td>
-
-                        <td class="px-6 py-4 text-gray-600">
-                            {{ c.data_candidatura|date:"d/m/Y H:i" }}
-                        </td>
-
-                        <td class="px-6 py-4 text-right">
-                            <a
-                                href="{% url 'candidaturas:acompanhamento' c.id %}"
-                                class="inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 transition"
-                            >
-                                Acompanhamento
-                            </a>
-                        </td>
-                    </tr>
-
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="p-8">
-                            <div class="rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-4 text-center text-sm text-yellow-800">
-                                Ainda não tens candidaturas.
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+            <td class="px-6 py-4 text-right">
+              <a href="{% url 'candidaturas:acompanhamento' c.id %}" style="background-image:linear-gradient(135deg,#2dd4bf,#6d28d9)" class="inline-flex items-center rounded-lg px-3.5 py-1.5 text-sm font-semibold text-white shadow-md shadow-violet-700/20 transition hover:-translate-y-0.5 hover:shadow-lg">Acompanhamento</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="p-8">
+              <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-center text-sm text-amber-700">Ainda não tens candidaturas.</div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
 
 </div>
 {% endblock %}

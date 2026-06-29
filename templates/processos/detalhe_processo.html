@@ -1,363 +1,222 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="max-w-6xl mx-auto py-8 space-y-6">
 
-    <!-- Cabeçalho -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <p class="mb-1 text-sm text-slate-500">Serviços Académicos</p>
+      <h1 class="text-3xl font-bold tracking-tight text-slate-900">Detalhe do processo</h1>
+      <p class="mt-1 text-sm text-slate-600">Consulta e acompanha o estado administrativo do processo de estágio.</p>
+    </div>
+
+    <div class="flex flex-wrap gap-3">
+      <a href="{% url 'processos:editar' processo.pk %}" style="background-image:linear-gradient(135deg,#a78bfa,#6d28d9)" class="inline-flex items-center justify-center rounded-2xl px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-violet-700/20 transition hover:-translate-y-0.5 hover:shadow-lg">Editar processo</a>
+      {% if processo.nota_publicada and processo.nota_final %}
+        <a href="{% url 'certificados:emitir' processo.pk %}" style="background-image:linear-gradient(135deg,#2dd4bf,#0d9488)" class="inline-flex items-center justify-center rounded-2xl px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-teal-700/20 transition hover:-translate-y-0.5 hover:shadow-lg">Emitir certificado</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div style="height:4px;background:linear-gradient(90deg,#2dd4bf,#6d28d9)"></div>
+    <div class="flex flex-col gap-4 border-b border-slate-100 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Estágio</p>
+        <h2 class="text-xl font-semibold text-slate-900">{{ processo.candidatura.estagio.titulo }}</h2>
+        <p class="mt-1 text-sm text-slate-500">{{ processo.candidatura.estagio.empresa.nome }}</p>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <span class="inline-flex items-center rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-800">{{ processo.get_estado_display }}</span>
+        {% if processo.validado_servicos_academicos %}
+          <span class="inline-flex items-center rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">Validado pelos serviços académicos</span>
+        {% else %}
+          <span class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">Validação pendente</span>
+        {% endif %}
+        {% if processo.nota_publicada %}
+          <span class="inline-flex items-center rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">Nota publicada</span>
+        {% else %}
+          <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">Nota não publicada</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="grid gap-6 p-6 md:grid-cols-2 lg:grid-cols-4">
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Aluno</p>
+        <p class="font-semibold text-slate-900">{{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}</p>
+        {% if processo.candidatura.aluno.email %}<p class="text-sm text-slate-500">{{ processo.candidatura.aluno.email }}</p>{% endif %}
+      </div>
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Orientador académico</p>
+        {% if processo.orientador %}
+          <p class="font-semibold text-slate-900">{{ processo.orientador.get_full_name|default:processo.orientador.username }}</p>
+          {% if processo.orientador.email %}<p class="text-sm text-slate-500">{{ processo.orientador.email }}</p>{% endif %}
+        {% else %}
+          <p class="text-sm text-slate-400">Ainda não atribuído</p>
+        {% endif %}
+      </div>
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Supervisor da entidade</p>
+        {% if processo.supervisor_nome %}
+          <p class="font-semibold text-slate-900">{{ processo.supervisor_nome }}</p>
+          {% if processo.supervisor_email %}<p class="text-sm text-slate-500">{{ processo.supervisor_email }}</p>{% endif %}
+          {% if processo.supervisor_telefone %}<p class="text-sm text-slate-500">{{ processo.supervisor_telefone }}</p>{% endif %}
+        {% else %}
+          <p class="text-sm text-slate-400">Ainda não definido</p>
+        {% endif %}
+      </div>
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Empresa</p>
+        <p class="font-semibold text-slate-900">{{ processo.candidatura.estagio.empresa.nome }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Dados operacionais</p>
+        <h2 class="text-xl font-semibold text-slate-900">Estágio</h2>
+        <p class="mt-1 text-sm text-slate-600">Informação definida pela empresa e validada pelos serviços académicos.</p>
+      </div>
+      <div class="grid gap-5 md:grid-cols-2">
         <div>
-            <p class="text-sm text-gray-500 mb-1">Serviços Académicos</p>
-            <h1 class="text-3xl font-bold text-gray-900">Detalhe do processo</h1>
-            <p class="text-sm text-gray-600 mt-1">
-                Consulta e acompanha o estado administrativo do processo de estágio.
-            </p>
+          <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Local</p>
+          <p class="font-semibold text-slate-900">{{ processo.local_estagio|default:"Não definido" }}</p>
         </div>
-
-        <a
-            href="{% url 'processos:editar' processo.pk %}"
-            class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
-        >
-            Editar processo
-        </a>
-
-        {% if processo.nota_publicada and processo.nota_final %}
-        <a
-            href="{% url 'certificados:emitir' processo.pk %}"
-            class="inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition"
-        >
-            Emitir certificado
-        </a>
-    {% endif %}
-    </div>
-
-    <!-- Resumo principal -->
-    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Estágio</p>
-                <h2 class="text-xl font-semibold text-gray-900">
-                    {{ processo.candidatura.estagio.titulo }}
-                </h2>
-                <p class="text-sm text-gray-500 mt-1">
-                    {{ processo.candidatura.estagio.empresa.nome }}
-                </p>
-            </div>
-
-            <div class="flex flex-wrap gap-2">
-                <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
-                    {{ processo.get_estado_display }}
-                </span>
-
-                {% if processo.validado_servicos_academicos %}
-                    <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                        Validado pelos serviços académicos
-                    </span>
-                {% else %}
-                    <span class="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
-                        Validação pendente
-                    </span>
-                {% endif %}
-
-                {% if processo.nota_publicada %}
-                    <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                        Nota publicada
-                    </span>
-                {% else %}
-                    <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                        Nota não publicada
-                    </span>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="p-6 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Aluno</p>
-                <p class="font-semibold text-gray-900">
-                    {{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}
-                </p>
-                {% if processo.candidatura.aluno.email %}
-                    <p class="text-sm text-gray-500">{{ processo.candidatura.aluno.email }}</p>
-                {% endif %}
-            </div>
-
-            <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Orientador académico</p>
-                {% if processo.orientador %}
-                    <p class="font-semibold text-gray-900">
-                        {{ processo.orientador.get_full_name|default:processo.orientador.username }}
-                    </p>
-                    {% if processo.orientador.email %}
-                        <p class="text-sm text-gray-500">{{ processo.orientador.email }}</p>
-                    {% endif %}
-                {% else %}
-                    <p class="text-sm text-gray-400">Ainda não atribuído</p>
-                {% endif %}
-            </div>
-
-            <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Supervisor da entidade</p>
-                {% if processo.supervisor_nome %}
-                    <p class="font-semibold text-gray-900">{{ processo.supervisor_nome }}</p>
-                    {% if processo.supervisor_email %}
-                        <p class="text-sm text-gray-500">{{ processo.supervisor_email }}</p>
-                    {% endif %}
-                    {% if processo.supervisor_telefone %}
-                        <p class="text-sm text-gray-500">{{ processo.supervisor_telefone }}</p>
-                    {% endif %}
-                {% else %}
-                    <p class="text-sm text-gray-400">Ainda não definido</p>
-                {% endif %}
-            </div>
-
-            <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Empresa</p>
-                <p class="font-semibold text-gray-900">
-                    {{ processo.candidatura.estagio.empresa.nome }}
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Dados do estágio e controlo administrativo -->
-    <div class="grid lg:grid-cols-2 gap-6">
-
-        <!-- Dados do estágio -->
-        <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-5">
-            <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Dados operacionais</p>
-                <h2 class="text-xl font-semibold text-gray-900">Estágio</h2>
-                <p class="text-sm text-gray-600 mt-1">
-                    Informação definida pela empresa e validada pelos serviços académicos.
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-5">
-                <div>
-                    <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Local</p>
-                    <p class="font-semibold text-gray-900">
-                        {{ processo.local_estagio|default:"Não definido" }}
-                    </p>
-                </div>
-
-                <div>
-                    <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Período</p>
-                    {% if processo.data_inicio or processo.data_fim %}
-                        <p class="font-semibold text-gray-900">
-                            {% if processo.data_inicio %}
-                                {{ processo.data_inicio|date:"d/m/Y" }}
-                            {% else %}
-                                Início não definido
-                            {% endif %}
-                        </p>
-                        <p class="text-sm text-gray-500">
-                            até
-                            {% if processo.data_fim %}
-                                {{ processo.data_fim|date:"d/m/Y" }}
-                            {% else %}
-                                fim não definido
-                            {% endif %}
-                        </p>
-                    {% else %}
-                        <p class="text-sm text-gray-400">Datas não definidas</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Controlo administrativo -->
-        <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-5">
-            <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Controlo institucional</p>
-                <h2 class="text-xl font-semibold text-gray-900">Validação administrativa</h2>
-                <p class="text-sm text-gray-600 mt-1">
-                    Estado de validação e confirmação do processo pelos serviços académicos.
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-5">
-                <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                    <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Empresa confirmada</p>
-                    {% if processo.empresa_confirmada %}
-                        <p class="font-semibold text-green-700">Sim</p>
-                    {% else %}
-                        <p class="font-semibold text-yellow-700">Não</p>
-                    {% endif %}
-                </div>
-
-                <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                    <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Processo validado</p>
-                    {% if processo.validado_servicos_academicos %}
-                        <p class="font-semibold text-green-700">Sim</p>
-                    {% else %}
-                        <p class="font-semibold text-yellow-700">Não</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Avaliações internas -->
-    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-6">
         <div>
-            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Informação interna</p>
-            <h2 class="text-xl font-semibold text-gray-900">Avaliações internas</h2>
-            <p class="text-sm text-gray-600 mt-1">
-                Estas avaliações não são visíveis ao aluno. Servem de apoio ao fecho administrativo da nota final.
-            </p>
+          <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Período</p>
+          {% if processo.data_inicio or processo.data_fim %}
+            <p class="font-semibold text-slate-900">{% if processo.data_inicio %}{{ processo.data_inicio|date:"d/m/Y" }}{% else %}Início não definido{% endif %}</p>
+            <p class="text-sm text-slate-500">até {% if processo.data_fim %}{{ processo.data_fim|date:"d/m/Y" }}{% else %}fim não definido{% endif %}</p>
+          {% else %}
+            <p class="text-sm text-slate-400">Datas não definidas</p>
+          {% endif %}
         </div>
-
-        <div class="grid lg:grid-cols-2 gap-6">
-            <div class="rounded-2xl border border-gray-200 p-5 space-y-4">
-                <div class="flex items-start justify-between gap-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Avaliação prática da entidade</h3>
-                        <p class="text-sm text-gray-500 mt-1">
-                            Avaliação do desempenho prático feita pela empresa/supervisor.
-                        </p>
-                    </div>
-
-                    {% if avaliacao_entidade %}
-                        <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                            Submetida
-                        </span>
-                    {% else %}
-                        <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                            Pendente
-                        </span>
-                    {% endif %}
-                </div>
-
-                {% if avaliacao_entidade %}
-                    <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-3">
-                        <div>
-                            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Supervisor</p>
-                            <p class="font-semibold text-gray-900">
-                                {{ avaliacao_entidade.supervisor_nome_snapshot }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Nota prática</p>
-                            <p class="text-3xl font-bold text-gray-900">
-                                {{ avaliacao_entidade.nota_pratica }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Comentário</p>
-                            <p class="text-sm text-gray-700 leading-relaxed">
-                                {{ avaliacao_entidade.comentario|default:"Sem comentário registado." }}
-                            </p>
-                        </div>
-
-                        <p class="text-xs text-gray-400">
-                            Submetida em {{ avaliacao_entidade.criada_em|date:"d/m/Y H:i" }}
-                        </p>
-                    </div>
-                {% else %}
-                    <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
-                        <p class="text-sm text-gray-600">
-                            A empresa ainda não submeteu a avaliação prática.
-                        </p>
-                    </div>
-                {% endif %}
-            </div>
-
-            <div class="rounded-2xl border border-gray-200 p-5 space-y-4">
-                <div class="flex items-start justify-between gap-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Avaliação teórica do orientador</h3>
-                        <p class="text-sm text-gray-500 mt-1">
-                            Avaliação do relatório final feita pelo orientador académico.
-                        </p>
-                    </div>
-
-                    {% if avaliacao_orientador %}
-                        <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                            Registada
-                        </span>
-                    {% else %}
-                        <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                            Pendente
-                        </span>
-                    {% endif %}
-                </div>
-
-                {% if avaliacao_orientador %}
-                    <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-3">
-                        <div>
-                            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Orientador</p>
-                            <p class="font-semibold text-gray-900">
-                                {% if avaliacao_orientador.orientador %}
-                                    {{ avaliacao_orientador.orientador.get_full_name|default:avaliacao_orientador.orientador.username }}
-                                {% else %}
-                                    Orientador não definido
-                                {% endif %}
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Nota teórica</p>
-                            <p class="text-3xl font-bold text-gray-900">
-                                {{ avaliacao_orientador.nota_teorica }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Comentário</p>
-                            <p class="text-sm text-gray-700 leading-relaxed">
-                                {{ avaliacao_orientador.comentario|default:"Sem comentário registado." }}
-                            </p>
-                        </div>
-
-                        <p class="text-xs text-gray-400">
-                            Submetida em {{ avaliacao_orientador.criada_em|date:"d/m/Y H:i" }}
-                        </p>
-                    </div>
-                {% else %}
-                    <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
-                        <p class="text-sm text-gray-600">
-                            O orientador ainda não submeteu a avaliação teórica.
-                        </p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
+      </div>
     </div>
 
-    <!-- Nota final -->
-    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-5">
-        <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+    <div class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Controlo institucional</p>
+        <h2 class="text-xl font-semibold text-slate-900">Validação administrativa</h2>
+        <p class="mt-1 text-sm text-slate-600">Estado de validação e confirmação do processo pelos serviços académicos.</p>
+      </div>
+      <div class="grid gap-5 md:grid-cols-2">
+        <div class="rounded-xl border border-slate-100 bg-slate-50 p-4">
+          <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Empresa confirmada</p>
+          {% if processo.empresa_confirmada %}<p class="font-semibold text-teal-700">Sim</p>{% else %}<p class="font-semibold text-amber-700">Não</p>{% endif %}
+        </div>
+        <div class="rounded-xl border border-slate-100 bg-slate-50 p-4">
+          <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Processo validado</p>
+          {% if processo.validado_servicos_academicos %}<p class="font-semibold text-teal-700">Sim</p>{% else %}<p class="font-semibold text-amber-700">Não</p>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div>
+      <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Informação interna</p>
+      <h2 class="text-xl font-semibold text-slate-900">Avaliações internas</h2>
+      <p class="mt-1 text-sm text-slate-600">Estas avaliações não são visíveis ao aluno. Servem de apoio ao fecho administrativo da nota final.</p>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <div class="space-y-4 rounded-2xl border border-slate-200 p-5">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3 class="text-lg font-semibold text-slate-900">Avaliação prática da entidade</h3>
+            <p class="mt-1 text-sm text-slate-500">Avaliação do desempenho prático feita pela empresa/supervisor.</p>
+          </div>
+          {% if avaliacao_entidade %}
+            <span class="inline-flex items-center rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">Submetida</span>
+          {% else %}
+            <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">Pendente</span>
+          {% endif %}
+        </div>
+
+        {% if avaliacao_entidade %}
+          <div class="space-y-3 rounded-xl border border-slate-100 bg-slate-50 p-4">
             <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Resultado oficial</p>
-                <h2 class="text-xl font-semibold text-gray-900">Nota final</h2>
-                <p class="text-sm text-gray-600 mt-1">
-                    A nota final é lançada e publicada pelos Serviços Académicos.
-                </p>
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Supervisor</p>
+              <p class="font-semibold text-slate-900">{{ avaliacao_entidade.supervisor_nome_snapshot }}</p>
             </div>
+            <div>
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Nota prática</p>
+              <p class="text-3xl font-bold text-slate-900">{{ avaliacao_entidade.nota_pratica }}</p>
+            </div>
+            <div>
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Comentário</p>
+              <p class="text-sm leading-relaxed text-slate-700">{{ avaliacao_entidade.comentario|default:"Sem comentário registado." }}</p>
+            </div>
+            <p class="text-xs text-slate-400">Submetida em {{ avaliacao_entidade.criada_em|date:"d/m/Y H:i" }}</p>
+          </div>
+        {% else %}
+          <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+            <p class="text-sm text-slate-600">A empresa ainda não submeteu a avaliação prática.</p>
+          </div>
+        {% endif %}
+      </div>
 
-            {% if processo.nota_publicada %}
-                <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                    Publicada ao aluno
-                </span>
-            {% else %}
-                <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                    Não publicada
-                </span>
-            {% endif %}
+      <div class="space-y-4 rounded-2xl border border-slate-200 p-5">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3 class="text-lg font-semibold text-slate-900">Avaliação teórica do orientador</h3>
+            <p class="mt-1 text-sm text-slate-500">Avaliação do relatório final feita pelo orientador académico.</p>
+          </div>
+          {% if avaliacao_orientador %}
+            <span class="inline-flex items-center rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">Registada</span>
+          {% else %}
+            <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">Pendente</span>
+          {% endif %}
         </div>
 
-        <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Nota final registada</p>
-
-            {% if processo.nota_final %}
-                <p class="text-3xl font-bold text-gray-900">{{ processo.nota_final }}</p>
-            {% else %}
-                <p class="text-sm text-gray-500">Ainda não lançada.</p>
-            {% endif %}
-        </div>
+        {% if avaliacao_orientador %}
+          <div class="space-y-3 rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div>
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Orientador</p>
+              <p class="font-semibold text-slate-900">{% if avaliacao_orientador.orientador %}{{ avaliacao_orientador.orientador.get_full_name|default:avaliacao_orientador.orientador.username }}{% else %}Orientador não definido{% endif %}</p>
+            </div>
+            <div>
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Nota teórica</p>
+              <p class="text-3xl font-bold text-slate-900">{{ avaliacao_orientador.nota_teorica }}</p>
+            </div>
+            <div>
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Comentário</p>
+              <p class="text-sm leading-relaxed text-slate-700">{{ avaliacao_orientador.comentario|default:"Sem comentário registado." }}</p>
+            </div>
+            <p class="text-xs text-slate-400">Submetida em {{ avaliacao_orientador.criada_em|date:"d/m/Y H:i" }}</p>
+          </div>
+        {% else %}
+          <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+            <p class="text-sm text-slate-600">O orientador ainda não submeteu a avaliação teórica.</p>
+          </div>
+        {% endif %}
+      </div>
     </div>
+  </div>
+
+  <div class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Resultado oficial</p>
+        <h2 class="text-xl font-semibold text-slate-900">Nota final</h2>
+        <p class="mt-1 text-sm text-slate-600">A nota final é lançada e publicada pelos Serviços Académicos.</p>
+      </div>
+      {% if processo.nota_publicada %}
+        <span class="inline-flex items-center rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">Publicada ao aluno</span>
+      {% else %}
+        <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">Não publicada</span>
+      {% endif %}
+    </div>
+
+    <div class="rounded-xl border border-slate-100 bg-slate-50 p-4">
+      <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Nota final registada</p>
+      {% if processo.nota_final %}<p class="text-3xl font-bold text-slate-900">{{ processo.nota_final }}</p>{% else %}<p class="text-sm text-slate-500">Ainda não lançada.</p>{% endif %}
+    </div>
+  </div>
 
 </div>
 {% endblock %}

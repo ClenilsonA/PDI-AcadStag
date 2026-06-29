@@ -1,113 +1,71 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="flex justify-between items-center mb-4">
-  <h2 class="text-2xl font-semibold">Meus Estágios</h2>
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-slate-900">Meus estágios</h1>
+    <p class="mt-1 text-sm text-slate-500">Gere os estágios que a tua empresa publicou.</p>
+  </div>
 
-  <a
-    href="{% url 'estagios:create' %}"
-    class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition"
-  >
-     Criar estágio
+  <a href="{% url 'estagios:create' %}"
+     style="background-image:linear-gradient(135deg,#2dd4bf,#6d28d9)"
+     class="inline-flex items-center gap-1.5 rounded-2xl px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-700/20 transition hover:-translate-y-0.5 hover:shadow-xl">
+    + Criar estágio
   </a>
 </div>
 
-<div class="bg-white shadow rounded-lg overflow-hidden">
-
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
   <div class="overflow-x-auto">
     <table class="min-w-full text-sm">
-
-      <thead class="bg-gray-100 text-gray-700">
+      <thead class="bg-slate-50 text-slate-500">
         <tr>
-          <th class="text-left px-4 py-3">Título</th>
-          <th class="text-left px-4 py-3">Área</th>
-          <th class="text-left px-4 py-3">Duração</th>
-          <th class="text-left px-4 py-3">Estado</th>
-          <th class="text-left px-4 py-3">Data</th>
-          <th class="text-right px-4 py-3">Ações</th>
+          <th class="px-4 py-3 text-left font-semibold">Título</th>
+          <th class="px-4 py-3 text-left font-semibold">Área</th>
+          <th class="px-4 py-3 text-left font-semibold">Duração</th>
+          <th class="px-4 py-3 text-left font-semibold">Estado</th>
+          <th class="px-4 py-3 text-left font-semibold">Data</th>
+          <th class="px-4 py-3 text-right font-semibold">Ações</th>
         </tr>
       </thead>
 
-      <tbody class="divide-y">
-
+      <tbody class="divide-y divide-slate-100">
         {% for e in estagios %}
-        <tr class="hover:bg-gray-50">
-
+        <tr class="hover:bg-slate-50">
           <td class="px-4 py-3">
-            <div class="font-semibold">{{ e.titulo }}</div>
-            <div class="text-gray-500 text-xs">
-              {{ e.descricao|truncatechars:70 }}
-            </div>
+            <div class="font-semibold text-slate-900">{{ e.titulo }}</div>
+            <div class="text-xs text-slate-500">{{ e.descricao|truncatechars:70 }}</div>
           </td>
-
-          <td class="px-4 py-3">
-            {{ e.area }}
-          </td>
-
-          <td class="px-4 py-3">
-            {{ e.duracao_meses }} meses
-          </td>
-
+          <td class="px-4 py-3 text-slate-700">{{ e.area }}</td>
+          <td class="px-4 py-3 text-slate-700">{{ e.duracao_meses }} meses</td>
           <td class="px-4 py-3">
             {% if e.ativo %}
-              <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">
-                Ativo
-              </span>
+              <span class="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700">Ativo</span>
             {% else %}
-              <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">
-                Inativo
-              </span>
+              <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500">Inativo</span>
             {% endif %}
           </td>
-
-          <td class="px-4 py-3 text-gray-600">
-            {{ e.data_criacao|date:"d/m/Y" }}
-          </td>
-
-          <td class="px-4 py-3 text-right space-x-2">
-
-            <a
-              href="{% url 'estagios:update' e.id %}"
-              class="border border-blue-600 text-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-50"
-            >
-              Editar
-            </a>
-
+          <td class="px-4 py-3 text-slate-500">{{ e.data_criacao|date:"d/m/Y" }}</td>
+          <td class="px-4 py-3 text-right space-x-2 whitespace-nowrap">
+            <a href="{% url 'estagios:update' e.id %}" class="rounded-lg border border-violet-200 px-3 py-1.5 text-sm font-semibold text-violet-700 transition hover:bg-violet-50">Editar</a>
             {% if e.ativo %}
-              <a
-                href="{% url 'estagios:deactivate' e.id %}"
-                class="border border-red-600 text-red-600 px-3 py-1 rounded text-sm hover:bg-red-50"
-              >
-                Desativar
-              </a>
+              <a href="{% url 'estagios:deactivate' e.id %}" class="rounded-lg border border-rose-200 px-3 py-1.5 text-sm font-semibold text-rose-600 transition hover:bg-rose-50">Desativar</a>
             {% else %}
-              <span class="text-gray-400 text-sm">
-                Desativado
-              </span>
+              <span class="text-sm text-slate-400">Desativado</span>
             {% endif %}
-
           </td>
-
         </tr>
-
         {% empty %}
         <tr>
           <td colspan="6" class="p-6">
-
-            <div class="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800">
-              Ainda não criaste estágios.  
-              Clica em <b>“Criar estágio”</b>.
+            <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+              Ainda não criaste estágios. Clica em <b>"Criar estágio"</b>.
             </div>
-
           </td>
         </tr>
         {% endfor %}
-
       </tbody>
-
     </table>
   </div>
-
 </div>
 
 {% endblock %}

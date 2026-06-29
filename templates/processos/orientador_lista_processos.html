@@ -3,137 +3,90 @@
 {% block content %}
 <div class="max-w-7xl mx-auto py-8 space-y-6">
 
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-            <p class="text-sm text-gray-500 mb-1">Área do orientador</p>
-            <h1 class="text-3xl font-bold text-gray-900">Meus alunos</h1>
-            <p class="text-sm text-gray-600 mt-1">
-                Consulta os processos que te foram atribuídos e acompanha relatórios e avaliações teóricas.
-            </p>
-        </div>
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <p class="mb-1 text-sm text-slate-500">Área do orientador</p>
+      <h1 class="text-3xl font-bold tracking-tight text-slate-900">Meus alunos / processos</h1>
+      <p class="mt-1 text-sm text-slate-600">Consulta os processos que te foram atribuídos e acompanha relatórios e avaliações teóricas.</p>
+    </div>
+    <div class="inline-flex items-center rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700 shadow-sm">
+      {{ processos|length }} processo{% if processos|length != 1 %}s{% endif %}
+    </div>
+  </div>
 
-        <div class="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm">
-            {{ processos|length }} processo{% if processos|length != 1 %}s{% endif %}
-        </div>
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div style="height:4px;background:linear-gradient(90deg,#2dd4bf,#6d28d9)"></div>
+    <div class="border-b border-slate-100 px-6 py-5">
+      <h2 class="text-lg font-semibold text-slate-900">Processos atribuídos</h2>
+      <p class="mt-1 text-sm text-slate-500">Abre um processo para consultar o relatório final e registar a avaliação teórica.</p>
     </div>
 
-    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-100">
-            <h2 class="text-lg font-semibold text-gray-900">Processos atribuídos</h2>
-            <p class="text-sm text-gray-500 mt-1">
-                Abre um processo para consultar o relatório final e registar a avaliação teórica.
-            </p>
-        </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-slate-50 text-slate-500">
+          <tr>
+            <th class="px-6 py-3 text-left font-semibold">Aluno</th>
+            <th class="px-6 py-3 text-left font-semibold">Estágio</th>
+            <th class="px-6 py-3 text-left font-semibold">Empresa</th>
+            <th class="px-6 py-3 text-left font-semibold">Estado</th>
+            <th class="px-6 py-3 text-left font-semibold">Período</th>
+            <th class="px-6 py-3 font-semibold" style="text-align:center">Ações</th>
+          </tr>
+        </thead>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-sm">
-                <thead class="bg-gray-50 text-gray-600">
-                    <tr>
-                        <th class="text-left px-6 py-3 font-semibold">Aluno</th>
-                        <th class="text-left px-6 py-3 font-semibold">Estágio</th>
-                        <th class="text-left px-6 py-3 font-semibold">Empresa</th>
-                        <th class="text-left px-6 py-3 font-semibold">Estado</th>
-                        <th class="text-left px-6 py-3 font-semibold">Período</th>
-                        <th class="text-right px-6 py-3 font-semibold">Ações</th>
-                    </tr>
-                </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for processo in processos %}
+          <tr class="transition hover:bg-slate-50">
+            <td class="px-6 py-4">
+              <div class="font-medium text-slate-900">{{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}</div>
+              {% if processo.candidatura.aluno.email %}<div class="text-xs text-slate-500">{{ processo.candidatura.aluno.email }}</div>{% endif %}
+            </td>
 
-                <tbody class="divide-y divide-gray-100">
-                    {% for processo in processos %}
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4">
-                            <div class="font-medium text-gray-900">
-                                {{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}
-                            </div>
-                            {% if processo.candidatura.aluno.email %}
-                                <div class="text-xs text-gray-500">
-                                    {{ processo.candidatura.aluno.email }}
-                                </div>
-                            {% endif %}
-                        </td>
+            <td class="px-6 py-4">
+              <div class="font-medium text-slate-900">{{ processo.candidatura.estagio.titulo }}</div>
+              <div class="text-xs text-slate-500">{{ processo.candidatura.estagio.area|default:"Área não definida" }}</div>
+            </td>
 
-                        <td class="px-6 py-4">
-                            <div class="font-medium text-gray-900">
-                                {{ processo.candidatura.estagio.titulo }}
-                            </div>
-                            <div class="text-xs text-gray-500">
-                                {{ processo.candidatura.estagio.area|default:"Área não definida" }}
-                            </div>
-                        </td>
+            <td class="px-6 py-4 text-slate-700">{{ processo.candidatura.estagio.empresa.nome }}</td>
 
-                        <td class="px-6 py-4 text-gray-700">
-                            {{ processo.candidatura.estagio.empresa.nome }}
-                        </td>
+            <td class="px-6 py-4">
+              {% if processo.estado == "PREPARACAO" %}
+                <span class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">{{ processo.get_estado_display }}</span>
+              {% elif processo.estado == "EM_CURSO" %}
+                <span class="inline-flex items-center rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">{{ processo.get_estado_display }}</span>
+              {% elif processo.estado == "EM_AVALIACAO" %}
+                <span class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">{{ processo.get_estado_display }}</span>
+              {% elif processo.estado == "CONCLUIDO" %}
+                <span class="inline-flex items-center rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-800">{{ processo.get_estado_display }}</span>
+              {% else %}
+                <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{{ processo.get_estado_display }}</span>
+              {% endif %}
+            </td>
 
-                        <td class="px-6 py-4">
-                            {% if processo.estado == "PREPARACAO" %}
-                                <span class="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
-                                    {{ processo.get_estado_display }}
-                                </span>
-                            {% elif processo.estado == "EM_CURSO" %}
-                                <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
-                                    {{ processo.get_estado_display }}
-                                </span>
-                            {% elif processo.estado == "EM_AVALIACAO" %}
-                                <span class="inline-flex items-center rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-800">
-                                    {{ processo.get_estado_display }}
-                                </span>
-                            {% elif processo.estado == "CONCLUIDO" %}
-                                <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                                    {{ processo.get_estado_display }}
-                                </span>
-                            {% else %}
-                                <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
-                                    {{ processo.get_estado_display }}
-                                </span>
-                            {% endif %}
-                        </td>
+            <td class="px-6 py-4 text-slate-700">
+              {% if processo.data_inicio or processo.data_fim %}
+                <div class="font-medium text-slate-900">{% if processo.data_inicio %}{{ processo.data_inicio|date:"d/m/Y" }}{% else %}Início não definido{% endif %}</div>
+                <div class="text-xs text-slate-500">até {% if processo.data_fim %}{{ processo.data_fim|date:"d/m/Y" }}{% else %}fim não definido{% endif %}</div>
+              {% else %}
+                <span class="text-slate-400">Datas não definidas</span>
+              {% endif %}
+            </td>
 
-                        <td class="px-6 py-4 text-gray-700">
-                            {% if processo.data_inicio or processo.data_fim %}
-                                <div class="font-medium text-gray-900">
-                                    {% if processo.data_inicio %}
-                                        {{ processo.data_inicio|date:"d/m/Y" }}
-                                    {% else %}
-                                        Início não definido
-                                    {% endif %}
-                                </div>
-                                <div class="text-xs text-gray-500">
-                                    até
-                                    {% if processo.data_fim %}
-                                        {{ processo.data_fim|date:"d/m/Y" }}
-                                    {% else %}
-                                        fim não definido
-                                    {% endif %}
-                                </div>
-                            {% else %}
-                                <span class="text-gray-400">Datas não definidas</span>
-                            {% endif %}
-                        </td>
-
-                        <td class="px-6 py-4 text-right">
-                            <a
-                                href="{% url 'processos:orientador_detalhe' processo.pk %}"
-                                class="inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 transition"
-                            >
-                                Ver processo
-                            </a>
-                        </td>
-                    </tr>
-
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="p-8">
-                            <div class="rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-4 text-center text-sm text-yellow-800">
-                                Ainda não tens processos atribuídos.
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+            <td class="px-6 py-4" style="text-align:center">
+              <a href="{% url 'processos:orientador_detalhe' processo.pk %}" style="background-image:linear-gradient(135deg,#2dd4bf,#6d28d9)" class="inline-flex items-center rounded-lg px-3.5 py-1.5 text-sm font-semibold text-white shadow-md shadow-violet-700/20 transition hover:-translate-y-0.5 hover:shadow-lg">Ver processo</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="p-8">
+              <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-center text-sm text-amber-700">Ainda não tens processos atribuídos.</div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
 
 </div>
 {% endblock %}

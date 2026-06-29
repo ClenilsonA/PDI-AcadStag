@@ -1,6 +1,6 @@
 {% load static tailwind_tags %}
 <!doctype html>
-<html lang="pt-br">
+<html lang="pt-pt">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -62,7 +62,7 @@
         }
 
         .nav-logo img {
-            height: 200px;
+            height: 200px;   /* ajusta ao tamanho que querias (até ~64px cabe na barra) */
             width: auto;
             display: block;
             transition: transform .2s ease, opacity .2s ease;
@@ -181,15 +181,16 @@
             gap: .85rem;
         }
 
+        /* Base neutra do alerta — a cor vem da variante (success/error/warning/info) */
         .alert {
             display: flex;
             align-items: flex-start;
             gap: .8rem;
             padding: 1rem 1.2rem;
             border-radius: 18px;
-            border: 1px solid rgba(45,212,191,.14);
-            background: linear-gradient(135deg, rgba(45,212,191,.08), rgba(109,40,217,.04));
-            color: #0F766E;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--ink);
             font-size: .92rem;
             font-weight: 500;
             box-shadow: 0 4px 12px rgba(15,23,42,.04);
@@ -197,18 +198,66 @@
         }
 
         .alert::before {
-            content: "✓";
+            content: "•";
             width: 22px;
             height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 999px;
-            background: rgba(45,212,191,.12);
-            color: var(--teal-dk);
-            font-size: .78rem;
+            font-size: .8rem;
             font-weight: 700;
             flex-shrink: 0;
+            background: rgba(100,116,139,.12);
+            color: var(--ink-mid);
+        }
+
+        /* Sucesso — verde/teal */
+        .alert.success {
+            border-color: rgba(20,184,166,.25);
+            background: rgba(45,212,191,.08);
+            color: #0F766E;
+        }
+        .alert.success::before {
+            content: "✓";
+            background: rgba(45,212,191,.15);
+            color: var(--teal-dk);
+        }
+
+        /* Erro — vermelho */
+        .alert.error {
+            border-color: rgba(220,38,38,.22);
+            background: #FEF2F2;
+            color: #B91C1C;
+        }
+        .alert.error::before {
+            content: "✕";
+            background: rgba(220,38,38,.12);
+            color: #DC2626;
+        }
+
+        /* Aviso — âmbar */
+        .alert.warning {
+            border-color: rgba(245,158,11,.28);
+            background: #FFFBEB;
+            color: #B45309;
+        }
+        .alert.warning::before {
+            content: "!";
+            background: rgba(245,158,11,.15);
+            color: #D97706;
+        }
+
+        /* Info — roxo */
+        .alert.info {
+            border-color: rgba(109,40,217,.20);
+            background: rgba(109,40,217,.05);
+            color: var(--purple-hover);
+        }
+        .alert.info::before {
+            content: "i";
+            background: rgba(109,40,217,.10);
+            color: var(--purple);
         }
 
         @keyframes slideIn {
@@ -319,7 +368,7 @@
             {% if messages %}
                 <div class="alert-wrap">
                     {% for message in messages %}
-                        <div class="alert">{{ message }}</div>
+                        <div class="alert {{ message.tags }}">{{ message }}</div>
                     {% endfor %}
                 </div>
             {% endif %}

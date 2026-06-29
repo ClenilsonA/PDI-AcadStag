@@ -1,234 +1,136 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="max-w-6xl mx-auto py-8 space-y-6">
 
-    <!-- Cabeçalho -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <p class="mb-1 text-sm text-slate-500">Área do orientador</p>
+      <h1 class="text-3xl font-bold tracking-tight text-slate-900">Acompanhamento do aluno</h1>
+      <p class="mt-1 text-sm text-slate-600">Consulta os dados do estágio, acompanha o relatório final e regista a avaliação teórica.</p>
+    </div>
+    <a href="{% url 'processos:orientador_lista' %}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">Voltar aos meus alunos</a>
+  </div>
+
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div style="height:4px;background:linear-gradient(90deg,#2dd4bf,#6d28d9)"></div>
+    <div class="flex flex-col gap-4 border-b border-slate-100 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Estágio</p>
+        <h2 class="text-xl font-semibold text-slate-900">{{ processo.candidatura.estagio.titulo }}</h2>
+        <p class="mt-1 text-sm text-slate-500">{{ processo.candidatura.estagio.empresa.nome }}</p>
+      </div>
+      <div>
+        <span class="inline-flex items-center rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-800">{{ processo.get_estado_display }}</span>
+      </div>
+    </div>
+
+    <div class="grid gap-6 p-6 md:grid-cols-2 lg:grid-cols-4">
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Aluno</p>
+        <p class="font-semibold text-slate-900">{{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}</p>
+        {% if processo.candidatura.aluno.email %}<p class="text-sm text-slate-500">{{ processo.candidatura.aluno.email }}</p>{% endif %}
+      </div>
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Supervisor da entidade</p>
+        {% if processo.supervisor_nome %}
+          <p class="font-semibold text-slate-900">{{ processo.supervisor_nome }}</p>
+          {% if processo.supervisor_email %}<p class="text-sm text-slate-500">{{ processo.supervisor_email }}</p>{% endif %}
+          {% if processo.supervisor_telefone %}<p class="text-sm text-slate-500">{{ processo.supervisor_telefone }}</p>{% endif %}
+        {% else %}
+          <p class="text-sm text-slate-400">Ainda não definido</p>
+        {% endif %}
+      </div>
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Local do estágio</p>
+        <p class="font-semibold text-slate-900">{{ processo.local_estagio|default:"Não definido" }}</p>
+      </div>
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Período</p>
+        {% if processo.data_inicio or processo.data_fim %}
+          <p class="font-semibold text-slate-900">{% if processo.data_inicio %}{{ processo.data_inicio|date:"d/m/Y" }}{% else %}Início não definido{% endif %}</p>
+          <p class="text-sm text-slate-500">até {% if processo.data_fim %}{{ processo.data_fim|date:"d/m/Y" }}{% else %}fim não definido{% endif %}</p>
+        {% else %}
+          <p class="text-sm text-slate-400">Datas não definidas</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+
+    <div class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="flex items-start justify-between gap-4">
         <div>
-            <p class="text-sm text-gray-500 mb-1">Área do orientador</p>
-            <h1 class="text-3xl font-bold text-gray-900">Acompanhamento do aluno</h1>
-            <p class="text-sm text-gray-600 mt-1">
-                Consulta os dados do estágio, acompanha o relatório final e regista a avaliação teórica.
-            </p>
+          <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Documento do aluno</p>
+          <h2 class="text-xl font-semibold text-slate-900">Relatório final</h2>
+          <p class="mt-1 text-sm text-slate-600">O relatório final é a base para a tua avaliação teórica.</p>
         </div>
+        {% if relatorio %}
+          <span class="inline-flex items-center rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">Submetido</span>
+        {% else %}
+          <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">Pendente</span>
+        {% endif %}
+      </div>
 
-        <a
-            href="{% url 'processos:orientador_lista' %}"
-            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-        >
-            Voltar aos meus alunos
-        </a>
+      {% if relatorio %}
+        <div class="rounded-xl border border-teal-100 bg-teal-50 p-4">
+          <p class="text-sm text-teal-800">O aluno já submeteu o relatório final. Consulta o ficheiro antes de registar ou editar a avaliação teórica.</p>
+        </div>
+        {% if relatorio.ficheiro %}
+          <a href="{{ relatorio.ficheiro.url }}" target="_blank" style="background:#0f172a" class="inline-flex items-center rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90">Ver relatório</a>
+        {% else %}
+          <div class="rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <p class="text-sm text-amber-800">O relatório existe, mas não tem ficheiro associado.</p>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+          <p class="text-sm text-slate-600">O aluno ainda não submeteu o relatório final. A avaliação teórica pode ser preparada depois da submissão.</p>
+        </div>
+      {% endif %}
     </div>
 
-    <!-- Resumo principal -->
-    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Estágio</p>
-                <h2 class="text-xl font-semibold text-gray-900">
-                    {{ processo.candidatura.estagio.titulo }}
-                </h2>
-                <p class="text-sm text-gray-500 mt-1">
-                    {{ processo.candidatura.estagio.empresa.nome }}
-                </p>
-            </div>
-
-            <div>
-                <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
-                    {{ processo.get_estado_display }}
-                </span>
-            </div>
+    <div class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Avaliação interna</p>
+          <h2 class="text-xl font-semibold text-slate-900">Avaliação teórica</h2>
+          <p class="mt-1 text-sm text-slate-600">Esta avaliação é interna e será consultada pelos Serviços Académicos.</p>
         </div>
+        {% if avaliacao %}
+          <span class="inline-flex items-center rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">Registada</span>
+        {% else %}
+          <span class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">Por fazer</span>
+        {% endif %}
+      </div>
 
-        <div class="p-6 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Aluno</p>
-                <p class="font-semibold text-gray-900">
-                    {{ processo.candidatura.aluno.get_full_name|default:processo.candidatura.aluno.username }}
-                </p>
-                {% if processo.candidatura.aluno.email %}
-                    <p class="text-sm text-gray-500">{{ processo.candidatura.aluno.email }}</p>
-                {% endif %}
-            </div>
-
-            <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Supervisor da entidade</p>
-                {% if processo.supervisor_nome %}
-                    <p class="font-semibold text-gray-900">{{ processo.supervisor_nome }}</p>
-                    {% if processo.supervisor_email %}
-                        <p class="text-sm text-gray-500">{{ processo.supervisor_email }}</p>
-                    {% endif %}
-                    {% if processo.supervisor_telefone %}
-                        <p class="text-sm text-gray-500">{{ processo.supervisor_telefone }}</p>
-                    {% endif %}
-                {% else %}
-                    <p class="text-sm text-gray-400">Ainda não definido</p>
-                {% endif %}
-            </div>
-
-            <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Local do estágio</p>
-                <p class="font-semibold text-gray-900">
-                    {{ processo.local_estagio|default:"Não definido" }}
-                </p>
-            </div>
-
-            <div>
-                <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Período</p>
-                {% if processo.data_inicio or processo.data_fim %}
-                    <p class="font-semibold text-gray-900">
-                        {% if processo.data_inicio %}
-                            {{ processo.data_inicio|date:"d/m/Y" }}
-                        {% else %}
-                            Início não definido
-                        {% endif %}
-                    </p>
-                    <p class="text-sm text-gray-500">
-                        até
-                        {% if processo.data_fim %}
-                            {{ processo.data_fim|date:"d/m/Y" }}
-                        {% else %}
-                            fim não definido
-                        {% endif %}
-                    </p>
-                {% else %}
-                    <p class="text-sm text-gray-400">Datas não definidas</p>
-                {% endif %}
-            </div>
+      {% if avaliacao %}
+        <div class="space-y-4 rounded-xl border border-slate-100 bg-slate-50 p-4">
+          <div>
+            <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Nota proposta</p>
+            <p class="text-3xl font-bold text-slate-900">{{ avaliacao.nota_teorica }}</p>
+          </div>
+          <div>
+            <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Comentário</p>
+            <p class="text-sm leading-relaxed text-slate-700">{{ avaliacao.comentario|default:"Sem comentário registado." }}</p>
+          </div>
+          <p class="text-xs text-slate-400">Última atualização: {{ avaliacao.atualizada_em|date:"d/m/Y H:i" }}</p>
         </div>
+      {% else %}
+        <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+          <p class="text-sm text-slate-600">Ainda não registaste a avaliação teórica deste processo.</p>
+        </div>
+      {% endif %}
+
+      <div class="pt-1">
+        <a href="{% url 'avaliacoes:avaliar_orientador' processo.id %}" style="background-image:linear-gradient(135deg,#2dd4bf,#6d28d9)" class="inline-flex items-center rounded-2xl px-6 py-3 text-sm font-semibold text-white shadow-md shadow-violet-700/20 transition hover:-translate-y-0.5 hover:shadow-lg">{% if avaliacao %}Editar avaliação teórica{% else %}Avaliar relatório{% endif %}</a>
+      </div>
     </div>
+  </div>
 
-    <!-- Blocos de trabalho do orientador -->
-    <div class="grid lg:grid-cols-2 gap-6">
-
-        <!-- Relatório -->
-        <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-5">
-            <div class="flex items-start justify-between gap-4">
-                <div>
-                    <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Documento do aluno</p>
-                    <h2 class="text-xl font-semibold text-gray-900">Relatório final</h2>
-                    <p class="text-sm text-gray-600 mt-1">
-                        O relatório final é a base para a tua avaliação teórica.
-                    </p>
-                </div>
-
-                {% if relatorio %}
-                    <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                        Submetido
-                    </span>
-                {% else %}
-                    <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                        Pendente
-                    </span>
-                {% endif %}
-            </div>
-
-            {% if relatorio %}
-                <div class="rounded-xl border border-green-100 bg-green-50 p-4">
-                    <p class="text-sm text-green-800">
-                        O aluno já submeteu o relatório final. Consulta o ficheiro antes de registar ou editar a avaliação teórica.
-                    </p>
-                </div>
-
-                {% if relatorio.ficheiro %}
-                    <a
-                        href="{{ relatorio.ficheiro.url }}"
-                        target="_blank"
-                        class="inline-flex items-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition"
-                    >
-                        Ver relatório
-                    </a>
-                {% else %}
-                    <div class="rounded-xl border border-yellow-200 bg-yellow-50 p-4">
-                        <p class="text-sm text-yellow-800">
-                            O relatório existe, mas não tem ficheiro associado.
-                        </p>
-                    </div>
-                {% endif %}
-            {% else %}
-                <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
-                    <p class="text-sm text-gray-600">
-                        O aluno ainda não submeteu o relatório final. A avaliação teórica pode ser preparada depois da submissão.
-                    </p>
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Avaliação teórica -->
-        <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 space-y-5">
-            <div class="flex items-start justify-between gap-4">
-                <div>
-                    <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Avaliação interna</p>
-                    <h2 class="text-xl font-semibold text-gray-900">Avaliação teórica</h2>
-                    <p class="text-sm text-gray-600 mt-1">
-                        Esta avaliação é interna e será consultada pelos Serviços Académicos.
-                    </p>
-                </div>
-
-                {% if avaliacao %}
-                    <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                        Registada
-                    </span>
-                {% else %}
-                    <span class="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
-                        Por fazer
-                    </span>
-                {% endif %}
-            </div>
-
-            {% if avaliacao %}
-                <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-4">
-                    <div>
-                        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Nota proposta</p>
-                        <p class="text-3xl font-bold text-gray-900">
-                            {{ avaliacao.nota_teorica }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">Comentário</p>
-                        <p class="text-sm text-gray-700 leading-relaxed">
-                            {{ avaliacao.comentario|default:"Sem comentário registado." }}
-                        </p>
-                    </div>
-
-                    <p class="text-xs text-gray-400">
-                        Última atualização: {{ avaliacao.atualizada_em|date:"d/m/Y H:i" }}
-                    </p>
-                </div>
-            {% else %}
-                <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
-                    <p class="text-sm text-gray-600">
-                        Ainda não registaste a avaliação teórica deste processo.
-                    </p>
-                </div>
-            {% endif %}
-
-            <div class="pt-1">
-                <a
-                    href="{% url 'avaliacoes:avaliar_orientador' processo.id %}"
-                    class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
-                >
-                    {% if avaliacao %}
-                        Editar avaliação teórica
-                    {% else %}
-                        Avaliar relatório
-                    {% endif %}
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Nota de contexto -->
-    <div class="rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4">
-        <p class="text-sm text-blue-900">
-            <strong>Nota:</strong> a avaliação teórica registada aqui não é mostrada ao aluno.
-            Ela serve como informação interna para os Serviços Académicos decidirem e publicarem a nota final.
-        </p>
-    </div>
+  <div class="rounded-2xl border border-violet-100 bg-violet-50 px-5 py-4">
+    <p class="text-sm text-violet-900"><strong>Nota:</strong> a avaliação teórica registada aqui não é mostrada ao aluno. Ela serve como informação interna para os Serviços Académicos decidirem e publicarem a nota final.</p>
+  </div>
 
 </div>
 {% endblock %}
-
-

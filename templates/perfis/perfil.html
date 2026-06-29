@@ -1,182 +1,123 @@
 {% extends "base.html" %}
-
 {% block content %}
+<style>
+  .fx input:not([type=checkbox]):not([type=radio]):not([type=file]), .fx select, .fx textarea {
+    width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:.55rem .8rem;
+    font-size:.92rem; color:#0f172a; background:#fff; transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .fx input:focus, .fx select:focus, .fx textarea:focus { outline:none; border-color:#6d28d9; box-shadow:0 0 0 3px rgba(109,40,217,.15); }
+</style>
 
-<div class="max-w-6xl mx-auto py-5 px-4">
+<div class="max-w-5xl mx-auto py-8 px-4">
 
-  <div class="mb-5">
-    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Perfil</h2>
-    <p class="text-sm text-gray-500 mt-1">
-      Atualiza as informações da tua conta.
-    </p>
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold tracking-tight text-slate-900">Perfil</h1>
+    <p class="mt-1 text-sm text-slate-500">Atualiza as informações da tua conta.</p>
   </div>
 
-  <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-5 md:p-6">
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div style="height:4px;background:linear-gradient(90deg,#2dd4bf,#6d28d9)"></div>
 
-    <form method="post" class="space-y-6">
+    <form method="post" class="fx space-y-6 p-6 md:p-8">
       {% csrf_token %}
 
-      <!-- Dados da conta -->
       <section>
         <div class="mb-4">
-          <h3 class="text-base font-semibold text-gray-900">Dados da conta</h3>
-          <p class="text-sm text-gray-500">Informações principais do utilizador.</p>
+          <h3 class="text-base font-semibold text-slate-900">Dados da conta</h3>
+          <p class="text-sm text-slate-500">Informações principais do utilizador.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Primeiro nome
-            </label>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Primeiro nome</label>
             {{ user_form.first_name }}
-            {% if user_form.first_name.errors %}
-              <p class="mt-1 text-sm text-red-600">{{ user_form.first_name.errors.0 }}</p>
-            {% endif %}
+            {% if user_form.first_name.errors %}<p class="mt-1 text-sm text-rose-600">{{ user_form.first_name.errors.0 }}</p>{% endif %}
           </div>
-
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Último nome
-            </label>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Último nome</label>
             {{ user_form.last_name }}
-            {% if user_form.last_name.errors %}
-              <p class="mt-1 text-sm text-red-600">{{ user_form.last_name.errors.0 }}</p>
-            {% endif %}
+            {% if user_form.last_name.errors %}<p class="mt-1 text-sm text-rose-600">{{ user_form.last_name.errors.0 }}</p>{% endif %}
           </div>
-
           <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Email
-            </label>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Email</label>
             {{ user_form.email }}
-            {% if user_form.email.errors %}
-              <p class="mt-1 text-sm text-red-600">{{ user_form.email.errors.0 }}</p>
-            {% endif %}
+            {% if user_form.email.errors %}<p class="mt-1 text-sm text-rose-600">{{ user_form.email.errors.0 }}</p>{% endif %}
           </div>
         </div>
       </section>
 
-      <!-- Separador -->
-      <div class="border-t border-gray-200"></div>
+      <div class="border-t border-slate-200"></div>
 
       {% if empresa_form %}
-        <!-- Dados da empresa -->
         <section>
           <div class="mb-4">
-            <h3 class="text-base font-semibold text-gray-900">Dados da empresa</h3>
-            <p class="text-sm text-gray-500">Informações institucionais da empresa.</p>
+            <h3 class="text-base font-semibold text-slate-900">Dados da empresa</h3>
+            <p class="text-sm text-slate-500">Informações institucionais da empresa.</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Nome
-              </label>
+              <label class="mb-2 block text-sm font-medium text-slate-700">Nome</label>
               {{ empresa_form.nome }}
-              {% if empresa_form.nome.errors %}
-                <p class="mt-1 text-sm text-red-600">{{ empresa_form.nome.errors.0 }}</p>
-              {% endif %}
+              {% if empresa_form.nome.errors %}<p class="mt-1 text-sm text-rose-600">{{ empresa_form.nome.errors.0 }}</p>{% endif %}
             </div>
-
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Área
-              </label>
+              <label class="mb-2 block text-sm font-medium text-slate-700">Área</label>
               {{ empresa_form.area }}
-              {% if empresa_form.area.errors %}
-                <p class="mt-1 text-sm text-red-600">{{ empresa_form.area.errors.0 }}</p>
-              {% endif %}
+              {% if empresa_form.area.errors %}<p class="mt-1 text-sm text-rose-600">{{ empresa_form.area.errors.0 }}</p>{% endif %}
             </div>
-
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Contacto
-              </label>
+              <label class="mb-2 block text-sm font-medium text-slate-700">Contacto</label>
               {{ empresa_form.contacto }}
-              {% if empresa_form.contacto.errors %}
-                <p class="mt-1 text-sm text-red-600">{{ empresa_form.contacto.errors.0 }}</p>
-              {% endif %}
+              {% if empresa_form.contacto.errors %}<p class="mt-1 text-sm text-rose-600">{{ empresa_form.contacto.errors.0 }}</p>{% endif %}
             </div>
-
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Morada
-              </label>
+              <label class="mb-2 block text-sm font-medium text-slate-700">Morada</label>
               {{ empresa_form.morada }}
-              {% if empresa_form.morada.errors %}
-                <p class="mt-1 text-sm text-red-600">{{ empresa_form.morada.errors.0 }}</p>
-              {% endif %}
+              {% if empresa_form.morada.errors %}<p class="mt-1 text-sm text-rose-600">{{ empresa_form.morada.errors.0 }}</p>{% endif %}
             </div>
-
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                NIF
-              </label>
+              <label class="mb-2 block text-sm font-medium text-slate-700">NIF</label>
               {{ empresa_form.nif }}
-              {% if empresa_form.nif.errors %}
-                <p class="mt-1 text-sm text-red-600">{{ empresa_form.nif.errors.0 }}</p>
-              {% endif %}
+              {% if empresa_form.nif.errors %}<p class="mt-1 text-sm text-rose-600">{{ empresa_form.nif.errors.0 }}</p>{% endif %}
             </div>
           </div>
         </section>
 
       {% else %}
-        <!-- Dados adicionais -->
         <section>
           <div class="mb-4">
-            <h3 class="text-base font-semibold text-gray-900">Dados adicionais</h3>
-            <p class="text-sm text-gray-500">Informações complementares do perfil.</p>
+            <h3 class="text-base font-semibold text-slate-900">Dados adicionais</h3>
+            <p class="text-sm text-slate-500">Informações complementares do perfil.</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Telefone
-              </label>
+              <label class="mb-2 block text-sm font-medium text-slate-700">Telefone</label>
               {{ perfil_form.telefone }}
-              {% if perfil_form.telefone.errors %}
-                <p class="mt-1 text-sm text-red-600">{{ perfil_form.telefone.errors.0 }}</p>
-              {% endif %}
+              {% if perfil_form.telefone.errors %}<p class="mt-1 text-sm text-rose-600">{{ perfil_form.telefone.errors.0 }}</p>{% endif %}
             </div>
-
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Curso
-              </label>
+              <label class="mb-2 block text-sm font-medium text-slate-700">Curso</label>
               {{ perfil_form.curso }}
-              {% if perfil_form.curso.errors %}
-                <p class="mt-1 text-sm text-red-600">{{ perfil_form.curso.errors.0 }}</p>
-              {% endif %}
+              {% if perfil_form.curso.errors %}<p class="mt-1 text-sm text-rose-600">{{ perfil_form.curso.errors.0 }}</p>{% endif %}
             </div>
-
             {% if perfil_form.orientador %}
               <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Orientador
-                </label>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Orientador</label>
                 {{ perfil_form.orientador }}
-                {% if perfil_form.orientador.errors %}
-                  <p class="mt-1 text-sm text-red-600">{{ perfil_form.orientador.errors.0 }}</p>
-                {% endif %}
+                {% if perfil_form.orientador.errors %}<p class="mt-1 text-sm text-rose-600">{{ perfil_form.orientador.errors.0 }}</p>{% endif %}
               </div>
             {% endif %}
           </div>
         </section>
       {% endif %}
 
-      <!-- Botão -->
       <div class="flex justify-end pt-2">
-        <button
-          type="submit"
-          class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition"
-        >
-          Guardar alterações
-        </button>
+        <button type="submit" style="background-image:linear-gradient(135deg,#2dd4bf,#6d28d9)" class="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-700/20 transition hover:-translate-y-0.5 hover:shadow-xl">Guardar alterações</button>
       </div>
 
     </form>
-
   </div>
 </div>
-
 {% endblock %}
